@@ -1,9 +1,11 @@
+import 'package:caibao/app/events/logout_event.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/api_service.dart';
+import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/themes/tokens/app_radius.dart';
-import 'package:caibao/resources/themes/tokens/app_sizes.dart';
+import 'package:caibao/resources/pages/llm_models_page.dart';
+import 'package:caibao/resources/pages/storage_configs_page.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +18,15 @@ class ProfilePage extends NyStatefulWidget {
 }
 
 class _ProfilePageState extends NyPage<ProfilePage> {
+  static const Color _bg = Color(0xFFF5F5F5);
+
   User? _user;
+  String _themeMode = themeModeSystem;
   bool _loading = true;
 
   @override
   get init => () async {
+        _themeMode = await ThemePreference.read();
         await _loadUser();
       };
 
@@ -46,196 +52,198 @@ class _ProfilePageState extends NyPage<ProfilePage> {
     }
   }
 
-  void _noopTap(String label) {
-    showToastSorry(description: label);
+  Future<void> _openThemeSheet() async {
+    final current = await ThemePreference.read();
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in [
+                (themeModeLight, '明亮'),
+                (themeModeDark, '暗黑'),
+                (themeModeSystem, '系统'),
+              ])
+                ListTile(
+                  title: Text(option.$2),
+                  trailing: current == option.$1
+                      ? Icon(Icons.check, color: context.palette.brand)
+                      : null,
+                  onTap: () async {
+                    await ThemePreference.apply(context, option.$1);
+                    if (mounted) setState(() => _themeMode = option.$1);
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _logout() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('退出登录'),
+        content: const Text('确定要退出当前账号吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('退出', style: TextStyle(color: context.palette.danger)),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await event<LogoutEvent>();
+    }
+  }
+
+  String get _themeLabel {
+    switch (_themeMode) {
+      case themeModeLight:
+        return '明亮';
+      case themeModeDark:
+        return '暗黑';
+      default:
+        return '系统';
+    }
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
-    final user = _user;
-    final nickname = user?.displayName ?? '用户';
-    final caibaoId = user?.caibaoId ?? '';
-    final initial =
-        nickname.isNotEmpty ? nickname.characters.first : '用';
+    final nickname = _user?.displayName ?? '用户';
+    final initial = nickname.isNotEmpty ? nickname.characters.first : '用';
+    final avatarUrl = _user?.avatarUrl;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
+      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F8F8),
+        backgroundColor: _bg,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: Icon(Icons.menu, color: palette.foreground, size: AppSizes.iconXl),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _noopTap('更多'),
-            icon: Icon(
-              Icons.more_horiz,
-              color: palette.foreground,
-              size: AppSizes.iconXl,
-            ),
-          ),
-        ],
       ),
-      body: SafeArea(
-        child: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.x4,
-                  0,
-                  AppSpacing.x4,
-                  AppSpacing.x8,
-                ),
-                children: [
-                  const SizedBox(height: AppSpacing.x2),
-                  Center(
-                    child: CircleAvatar(
-                      radius: 48,
-                      backgroundColor: palette.brandContainer,
-                      child: Text(
-                        initial,
-                        style: TextStyle(
-                          fontSize: AppTypography.x3l,
-                          fontWeight: FontWeight.w700,
-                          color: palette.brandDark,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.x4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        nickname,
-                        style: TextStyle(
-                          fontSize: AppTypography.x2l,
-                          fontWeight: FontWeight.w700,
-                          color: palette.foreground,
-                        ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        size: AppSizes.iconLg,
-                        color: palette.mutedForeground,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.x1_5),
-                  Text(
-                    '菜包号: $caibaoId',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: AppTypography.sm,
-                      color: palette.mutedForeground,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.x5),
-                  Center(
-                    child: OutlinedButton(
-                      onPressed: () => _noopTap('菜包账号管理'),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: palette.foreground,
-                        side: const BorderSide(color: Color(0xFFE5E5E5)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: AppRadius.x2lAll,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.x8,
-                          vertical: AppSpacing.x3,
-                        ),
-                      ),
-                      child: Text(
-                        '菜包账号管理',
-                        style: TextStyle(
-                          fontSize: AppTypography.base,
-                          fontWeight: FontWeight.w600,
-                          color: palette.foreground,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.x6),
-                  _SettingsCard(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.auto_awesome,
-                        iconBg: const Color(0xFF3A3A3A),
-                        label: '菜包专业版',
-                        trailingText: '立即升级',
-                        onTap: () => _noopTap('菜包专业版'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.x3),
-                  _SettingsCard(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.face_retouching_natural,
-                        iconBg: const Color(0xFF8B7355),
-                        label: '菜包形象',
-                        onTap: () => _noopTap('菜包形象'),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.volume_up,
-                        iconBg: const Color(0xFF7C5CBF),
-                        label: '声音',
-                        onTap: () => _noopTap('声音'),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.text_fields,
-                        iconBg: const Color(0xFF3A3A3A),
-                        label: '字号与背景',
-                        onTap: () => _noopTap('字号与背景'),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.psychology_alt,
-                        iconBg: const Color(0xFF2F80ED),
-                        label: '记忆',
-                        trailingText: '已关闭',
-                        onTap: () => _noopTap('记忆'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.x3),
-                  _SettingsCard(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.add_comment,
-                        iconBg: const Color(0xFF2F80ED),
-                        label: '开启新话题',
-                        onTap: () => _noopTap('开启新话题'),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.search,
-                        iconBg: const Color(0xFF2F80ED),
-                        label: '查找聊天内容',
-                        onTap: () => _noopTap('查找聊天内容'),
-                      ),
-                      _SettingsTile(
-                        icon: Icons.bolt,
-                        iconBg: const Color(0xFF2F80ED),
-                        label: '新对话默认模式',
-                        trailingText: '快速',
-                        trailingIcon: Icons.unfold_more,
-                        onTap: () => _noopTap('新对话默认模式'),
-                      ),
-                    ],
-                  ),
-                ],
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.x4,
+                AppSpacing.x2,
+                AppSpacing.x4,
+                AppSpacing.x8,
               ),
-      ),
+              children: [
+                Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 44,
+                      backgroundColor: palette.brandContainer,
+                      backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? NetworkImage(avatarUrl)
+                          : null,
+                      child: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? null
+                          : Text(
+                              initial,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w700,
+                                color: palette.brandDark,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: AppSpacing.x3),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          nickname,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: palette.foreground,
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 22,
+                          color: palette.mutedForeground,
+                        ),
+                      ],
+                    ),
+                    if (_user?.caibaoId.isNotEmpty == true) ...[
+                      const SizedBox(height: AppSpacing.x1),
+                      Text(
+                        '菜包号: ${_user!.caibaoId}',
+                        style: TextStyle(
+                          fontSize: AppTypography.sm,
+                          color: palette.mutedForeground,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x6),
+                _MenuCard(
+                  children: [
+                    _MenuTile(
+                      label: 'S3 存储设置',
+                      icon: Icons.cloud_outlined,
+                      iconColor: const Color(0xFF3B82F6),
+                      onTap: () => routeTo(StorageConfigsPage.path),
+                    ),
+                    _MenuTile(
+                      label: '模型配置',
+                      icon: Icons.smart_toy_outlined,
+                      iconColor: const Color(0xFF8B5CF6),
+                      onTap: () => routeTo(LlmModelsPage.path),
+                    ),
+                    _MenuTile(
+                      label: '主题',
+                      icon: Icons.palette_outlined,
+                      iconColor: const Color(0xFF10B981),
+                      trailingText: _themeLabel,
+                      onTap: _openThemeSheet,
+                      showDivider: false,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.x3),
+                _MenuCard(
+                  children: [
+                    _MenuTile(
+                      label: '退出登录',
+                      danger: true,
+                      showChevron: false,
+                      showDivider: false,
+                      center: true,
+                      onTap: _logout,
+                    ),
+                  ],
+                ),
+              ],
+            ),
     );
   }
 }
 
-class _SettingsCard extends StatelessWidget {
-  const _SettingsCard({required this.children});
+class _MenuCard extends StatelessWidget {
+  const _MenuCard({required this.children});
 
   final List<Widget> children;
 
@@ -244,82 +252,113 @@ class _SettingsCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: AppRadius.x2lAll,
+        borderRadius: BorderRadius.circular(16),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(children: children),
     );
   }
 }
 
-class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({
-    required this.icon,
-    required this.iconBg,
+class _MenuTile extends StatelessWidget {
+  const _MenuTile({
     required this.label,
     required this.onTap,
+    this.icon,
+    this.iconColor,
     this.trailingText,
-    this.trailingIcon = Icons.chevron_right,
+    this.danger = false,
+    this.showChevron = true,
+    this.showDivider = true,
+    this.center = false,
   });
 
-  final IconData icon;
-  final Color iconBg;
   final String label;
-  final String? trailingText;
-  final IconData trailingIcon;
   final VoidCallback onTap;
+  final IconData? icon;
+  final Color? iconColor;
+  final String? trailingText;
+  final bool danger;
+  final bool showChevron;
+  final bool showDivider;
+  final bool center;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final labelStyle = TextStyle(
+      fontSize: AppTypography.base,
+      fontWeight: FontWeight.w500,
+      color: danger ? palette.danger : palette.foreground,
+    );
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: AppRadius.x2lAll,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x4,
-          vertical: AppSpacing.x3_5,
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.x4,
+              vertical: 14,
+            ),
+            child: center
+                ? SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: labelStyle,
+                    ),
+                  )
+                : Row(
+                    children: [
+                      if (icon != null) ...[
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: (iconColor ?? palette.brand)
+                                .withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            icon,
+                            size: 18,
+                            color: iconColor ?? palette.brand,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+                      Expanded(child: Text(label, style: labelStyle)),
+                      if (trailingText != null) ...[
+                        Text(
+                          trailingText!,
+                          style: TextStyle(
+                            fontSize: AppTypography.sm,
+                            color: palette.mutedForeground,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                      ],
+                      if (showChevron)
+                        Icon(
+                          Icons.chevron_right,
+                          size: 20,
+                          color: palette.mutedForeground,
+                        ),
+                    ],
+                  ),
+          ),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: AppRadius.mdAll,
-              ),
-              child: Icon(icon, color: Colors.white, size: AppSizes.iconMd),
-            ),
-            const SizedBox(width: AppSpacing.x3),
-            Expanded(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: AppTypography.base,
-                  fontWeight: FontWeight.w500,
-                  color: palette.foreground,
-                ),
-              ),
-            ),
-            if (trailingText != null) ...[
-              Text(
-                trailingText!,
-                style: TextStyle(
-                  fontSize: AppTypography.sm,
-                  color: palette.mutedForeground,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.x1),
-            ],
-            Icon(
-              trailingIcon,
-              size: AppSizes.iconLg,
-              color: palette.mutedForeground,
-            ),
-          ],
-        ),
-      ),
+        if (showDivider)
+          Divider(
+            height: 1,
+            thickness: 0.5,
+            indent: icon != null ? 60 : AppSpacing.x4,
+            endIndent: AppSpacing.x4,
+            color: const Color(0xFFE8E8E8),
+          ),
+      ],
     );
   }
 }

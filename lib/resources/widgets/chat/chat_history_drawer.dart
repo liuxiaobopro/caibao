@@ -2,6 +2,9 @@ import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/utils/conversation_groups.dart';
 import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/pages/agents_page.dart';
+import 'package:caibao/resources/pages/apps_page.dart';
+import 'package:caibao/resources/pages/drive_page.dart';
 import 'package:caibao/resources/pages/profile_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_shadows.dart';
@@ -9,7 +12,6 @@ import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class ChatHistoryDrawer extends StatelessWidget {
   const ChatHistoryDrawer({
@@ -18,6 +20,7 @@ class ChatHistoryDrawer extends StatelessWidget {
     required this.onSelectConversation,
     required this.onDeleteConversation,
     required this.onRefresh,
+    required this.onNavigate,
     required this.conversations,
     this.user,
     this.loading = false,
@@ -27,9 +30,15 @@ class ChatHistoryDrawer extends StatelessWidget {
   final ValueChanged<ChatConversation> onSelectConversation;
   final ValueChanged<ChatConversation> onDeleteConversation;
   final Future<void> Function() onRefresh;
+  final Future<void> Function(dynamic route) onNavigate;
   final List<ChatConversation> conversations;
   final User? user;
   final bool loading;
+
+  void _go(BuildContext context, dynamic route) {
+    Navigator.of(context).pop();
+    onNavigate(route);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,10 +113,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            routeTo(ProfilePage.path);
-                          },
+                          onTap: () => _go(context, ProfilePage.path),
                           behavior: HitTestBehavior.opaque,
                           child: Row(
                             children: [
@@ -142,27 +148,24 @@ class ChatHistoryDrawer extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _Shortcut(
-                              icon: Icons.cloud_outlined,
-                              label: '云空间',
-                              onTap: () {},
-                            ),
-                            _Shortcut(
-                              icon: Icons.star_border,
-                              label: '收藏',
-                              onTap: () {},
+                              icon: Icons.smart_toy_outlined,
+                              label: '智能体',
+                              onTap: () => _go(context, AgentsPage.path),
                             ),
                             _Shortcut(
                               icon: Icons.folder_outlined,
-                              label: '档案',
-                              onTap: () {},
+                              label: '云盘',
+                              onTap: () => _go(context, DrivePage.path),
+                            ),
+                            _Shortcut(
+                              icon: Icons.apps_outlined,
+                              label: '应用',
+                              onTap: () => _go(context, AppsPage.path),
                             ),
                             _Shortcut(
                               icon: Icons.settings_outlined,
                               label: '设置',
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                routeTo(ProfilePage.path);
-                              },
+                              onTap: () => _go(context, ProfilePage.path),
                             ),
                           ],
                         ),
@@ -389,6 +392,12 @@ class _ConversationTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.x3),
         child: Row(
           children: [
+            Icon(
+              Icons.chat_bubble_outline,
+              size: AppSizes.iconLg,
+              color: palette.mutedForeground,
+            ),
+            const SizedBox(width: AppSpacing.x3),
             Expanded(
               child: Text(
                 conversation.title?.isNotEmpty == true

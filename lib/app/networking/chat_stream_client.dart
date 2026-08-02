@@ -17,10 +17,46 @@ class ChatStreamClient {
     List<String>? fileIds,
     bool enableThinking = false,
     CancelToken? cancelToken,
+  }) {
+    return _streamChat(
+      path: '/conversations/$conversationId/chat',
+      content: content,
+      onEvent: onEvent,
+      fileIds: fileIds,
+      enableThinking: enableThinking,
+      cancelToken: cancelToken,
+    );
+  }
+
+  Future<void> streamAgentChat({
+    required String agentId,
+    required String content,
+    required void Function(ChatSSEEvent event) onEvent,
+    List<String>? fileIds,
+    bool enableThinking = false,
+    CancelToken? cancelToken,
+  }) {
+    return _streamChat(
+      path: '/agents/$agentId/chat',
+      content: content,
+      onEvent: onEvent,
+      fileIds: fileIds,
+      enableThinking: enableThinking,
+      cancelToken: cancelToken,
+    );
+  }
+
+  Future<void> _streamChat({
+    required String path,
+    required String content,
+    required void Function(ChatSSEEvent event) onEvent,
+    List<String>? fileIds,
+    bool enableThinking = false,
+    CancelToken? cancelToken,
   }) async {
     final token = Auth.data(field: 'token')?.toString();
-    final baseUrl = getEnv('API_BASE_URL')?.toString().replaceAll(RegExp(r'/$'), '') ??
-        '';
+    final baseUrl =
+        getEnv('API_BASE_URL')?.toString().replaceAll(RegExp(r'/$'), '') ?? '';
 
     final body = <String, dynamic>{
       'content': content,
@@ -39,7 +75,7 @@ class ChatStreamClient {
     }
 
     final response = await _dio.post<ResponseBody>(
-      '$baseUrl/conversations/$conversationId/chat',
+      '$baseUrl$path',
       data: body,
       cancelToken: cancelToken,
       options: Options(

@@ -109,6 +109,14 @@ class _ChatPageState extends NyPage<ChatPage> {
     _scaffoldKey.currentState?.openDrawer();
   }
 
+  Future<void> _navigateFromDrawer(dynamic route) async {
+    await routeTo(route);
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _scaffoldKey.currentState?.openDrawer();
+    });
+  }
+
   void _onNewChat() {
     setState(() {
       _title = '新对话';
@@ -267,6 +275,7 @@ class _ChatPageState extends NyPage<ChatPage> {
         onSelectConversation: _onSelectConversation,
         onDeleteConversation: _onDeleteConversation,
         onRefresh: _loadConversations,
+        onNavigate: _navigateFromDrawer,
       ),
       appBar: ChatAppBar(
         onMenuTap: _openDrawer,
