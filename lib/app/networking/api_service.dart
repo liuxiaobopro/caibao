@@ -1,23 +1,16 @@
+import 'package:caibao/app/models/chat_conversation.dart';
+import 'package:caibao/app/models/chat_message.dart';
+import 'package:caibao/app/models/user.dart';
+import 'package:caibao/app/networking/api_exception.dart';
+import 'package:caibao/app/networking/dio/interceptors/bearer_auth_interceptor.dart';
 import 'package:caibao/bootstrap/decoders.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-
-/* ApiService
-| -------------------------------------------------------------------------
-| Define your API endpoints
-| Learn more https://nylo.dev/docs/7.x/networking
-|-------------------------------------------------------------------------- */
 
 class ApiService extends NyApiService {
   ApiService()
       : super(
           decoders: modelDecoders,
           useNetworkLogger: true,
-          // baseOptions: (BaseOptions baseOptions) {
-          //   return baseOptions
-          //             ..connectTimeout = Duration(seconds: 5)
-          //             ..sendTimeout = Duration(seconds: 5)
-          //             ..receiveTimeout = Duration(seconds: 5);
-          // },
         );
 
   @override
@@ -25,60 +18,105 @@ class ApiService extends NyApiService {
 
   @override
   Map<Type, Interceptor> get interceptors => <Type, Interceptor>{
-    ...super.interceptors,
-    // MyCustomInterceptor: MyCustomInterceptor(),
-  };
+        ...super.interceptors,
+        BearerAuthInterceptor: BearerAuthInterceptor(),
+      };
 
-  /// Example to fetch the Nylo repository info from Github
-  Future<Map<String, dynamic>?> githubInfo() async {
-    return await network(
-      request: (Dio request) =>
-          request.get("https://api.github.com/repos/nylo-core/nylo"),
-      // cacheKey: "github_nylo_info", // Optional: Cache the response
-      // cacheDuration: const Duration(hours: 1),
-    );
+  @override
+  Future<RequestHeaders> setAuthHeaders(RequestHeaders headers) async {
+    final token = Auth.data(field: 'token')?.toString();
+    if (token != null && token.isNotEmpty) {
+      headers.addBearerToken(token);
+    }
+    return headers;
   }
 
-/* Helpers
-  |-------------------------------------------------------------------------- */
+  Future<Map<String, dynamic>> login(String username, String password) async {
+    final data = await _data(
+      (dio) => dio.post(
+        '/auth/login',
+        data: {'username': username, 'password': password},
+      ),
+      auth: false,
+    );
+    return Map<String, dynamic>.from(data as Map);
+  }
 
-  /* Authentication Headers
-  |--------------------------------------------------------------------------
-  | Set your auth headers
-  | Authenticate your API requests using a bearer token or any other method
-  |-------------------------------------------------------------------------- */
+  Future<User> fetchMe() async {
+    final data = await _data((dio) => dio.get('/auth/me'));
+    return User.fromJson(data);
+  }
 
-  // @override
-  // Future<RequestHeaders> setAuthHeaders(RequestHeaders headers) async {
-  //   String? myAuthToken = await StorageKeysConfig.bearerToken.read();
-  //   if (myAuthToken != null) {
-  //     headers.addBearerToken(myAuthToken);
-  //   }
-  //   return headers;
-  // }
+  Future<({List<ChatConversation> items, int total})> listConversations({
+    int pageNum = 1,
+    int pageSize = 50,
+    String? keyword,
+  }) async {
+    final query = <String, dynamic>{
+      'page_num': pageNum,
+      'page_size': pageSize,
+    };
+    if (keyword != null && keyword.trim().isNotEmpty) {
+      query['keyword'] = keyword.trim();
+    }
 
-  /* Should Refresh Token
-  |--------------------------------------------------------------------------
-  | Check if your Token should be refreshed
-  | Set `false` if your API does not require a token refresh
-  |-------------------------------------------------------------------------- */
+    final data = await _data(
+      (dio) => dio.get('/conversations', queryParameters: query),
+    );
+    final map = Map<String, dynamic>.from(data as Map);
+    final items = (map['items'] as List? ?? [])
+        .map((e) => ChatConversation.fromJson(e))
+        .toList();
+    final total = map['total'] is int
+        ? map['total'] as int
+        : int.tryParse('${map['total'] ?? items.length}') ?? items.length;
+    return (items: items, total: total);
+  }
 
-  // @override
-  // Future<bool> shouldRefreshToken() async {
-  //   return false;
-  // }
+  Future<String> createConversation({String title = ''}) async {
+    final data = await _data(
+      (dio) => dio.post('/conversations', data: {'title': title}),
+    );
+    final map = Map<String, dynamic>.from(data as Map);
+    final id = map['id']?.toString();
+    if (id == null || id.isEmpty) {
+      throw ApiException('创建会话失败');
+    }
+    return id;
+  }
 
-  /* Refresh Token
-  |--------------------------------------------------------------------------
-  | If `shouldRefreshToken` returns true then this method
-  | will be called to refresh your token. Save your new token to
-  | local storage and then use the value in `setAuthHeaders`.
-  |-------------------------------------------------------------------------- */
+  Future<void> deleteConversation(String id) async {
+    await _data((dio) => dio.delete('/conversations/$id'));
+  }
 
-  // @override
-  // refreshToken(Dio dio) async {
-  //  dynamic response = (await dio.get("https://example.com/refresh-token")).data;
-  //  // Save the new token
-  //   await StorageKeysConfig.bearerToken.save(response['token']);
-  // }
+  Future<List<ChatMessage>> listMessages(String conversationId) async {
+    final data = await _data(
+      (dio) => dio.get('/conversations/$conversationId/messages'),
+    );
+    final map = Map<String, dynamic>.from(data as Map);
+    return (map['items'] as List? ?? [])
+        .map((e) => ChatMessage.fromJson(e))
+        .toList();
+  }
+
+  Future<dynamic> _data(
+    Future Function(Dio dio) request, {
+    bool auth = true,
+  }) async {
+    final body = await network<Map<String, dynamic>>(
+      request: request,
+      shouldSetAuthHeaders: auth,
+    );
+    if (body == null) {
+      throw ApiException('网络错误');
+    }
+    final code = body['code'];
+    if (code != 0) {
+      throw ApiException(
+        body['msg']?.toString() ?? '请求失败',
+        code: code is int ? code : -1,
+      );
+    }
+    return body['data'];
+  }
 }

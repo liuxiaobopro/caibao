@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:caibao/app/mocks/chat_mock_data.dart';
 import 'package:caibao/app/models/chat_conversation.dart';
+import 'package:caibao/app/models/user.dart';
+import 'package:caibao/app/utils/conversation_groups.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/profile_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
@@ -8,6 +8,7 @@ import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
+import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class ChatHistoryDrawer extends StatelessWidget {
@@ -15,17 +16,29 @@ class ChatHistoryDrawer extends StatelessWidget {
     super.key,
     required this.onNewChat,
     required this.onSelectConversation,
+    required this.onDeleteConversation,
+    required this.onRefresh,
+    required this.conversations,
+    this.user,
+    this.loading = false,
   });
 
   final VoidCallback onNewChat;
   final ValueChanged<ChatConversation> onSelectConversation;
+  final ValueChanged<ChatConversation> onDeleteConversation;
+  final Future<void> Function() onRefresh;
+  final List<ChatConversation> conversations;
+  final User? user;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final width = MediaQuery.sizeOf(context).width * 0.88;
-    final groups = ChatMockData.conversationGroups();
-    final user = ChatMockData.user;
+    final groups = groupConversations(conversations);
+    final nickname = user?.displayName ?? '用户';
+    final initial =
+        nickname.isNotEmpty ? nickname.characters.first : '用';
 
     return Drawer(
       width: width,
@@ -102,7 +115,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                                 radius: 22,
                                 backgroundColor: palette.brandContainer,
                                 child: Text(
-                                  user.nickname.characters.first,
+                                  initial,
                                   style: TextStyle(
                                     color: palette.brandDark,
                                     fontWeight: FontWeight.w700,
@@ -113,7 +126,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                               const SizedBox(width: AppSpacing.x3),
                               Expanded(
                                 child: Text(
-                                  user.nickname,
+                                  nickname,
                                   style: TextStyle(
                                     fontSize: AppTypography.lg,
                                     fontWeight: FontWeight.w600,
@@ -181,45 +194,80 @@ class ChatHistoryDrawer extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.x2),
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.x5,
-                      0,
-                      AppSpacing.x5,
-                      100,
-                    ),
-                    itemCount: groups.length,
-                    itemBuilder: (context, index) {
-                      final group = groups[index];
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              top: AppSpacing.x3,
-                              bottom: AppSpacing.x2,
-                            ),
-                            child: Text(
-                              group.label,
-                              style: TextStyle(
-                                fontSize: AppTypography.sm,
-                                color: palette.mutedForeground,
-                                fontWeight: FontWeight.w400,
+                  child: RefreshIndicator(
+                    onRefresh: onRefresh,
+                    child: loading && conversations.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: const [
+                              SizedBox(height: 120),
+                              Center(child: CircularProgressIndicator()),
+                            ],
+                          )
+                        : groups.isEmpty
+                            ? ListView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSpacing.x5,
+                                  AppSpacing.x8,
+                                  AppSpacing.x5,
+                                  100,
+                                ),
+                                children: [
+                                  Text(
+                                    '暂无对话',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: AppTypography.base,
+                                      color: palette.mutedForeground,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : ListView.builder(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSpacing.x5,
+                                  0,
+                                  AppSpacing.x5,
+                                  100,
+                                ),
+                                itemCount: groups.length,
+                                itemBuilder: (context, index) {
+                                  final group = groups[index];
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: AppSpacing.x3,
+                                          bottom: AppSpacing.x2,
+                                        ),
+                                        child: Text(
+                                          group.label,
+                                          style: TextStyle(
+                                            fontSize: AppTypography.sm,
+                                            color: palette.mutedForeground,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      ...group.items.map(
+                                        (item) => _ConversationTile(
+                                          conversation: item,
+                                          onTap: () {
+                                            Navigator.of(context).pop();
+                                            onSelectConversation(item);
+                                          },
+                                          onLongPress: () =>
+                                              onDeleteConversation(item),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
-                            ),
-                          ),
-                          ...group.items.map(
-                            (item) => _ConversationTile(
-                              conversation: item,
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                onSelectConversation(item);
-                              },
-                            ),
-                          ),
-                        ],
-                      );
-                    },
                   ),
                 ),
               ],
@@ -324,23 +372,28 @@ class _ConversationTile extends StatelessWidget {
   const _ConversationTile({
     required this.conversation,
     required this.onTap,
+    required this.onLongPress,
   });
 
   final ChatConversation conversation;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.x3),
         child: Row(
           children: [
             Expanded(
               child: Text(
-                conversation.title ?? '',
+                conversation.title?.isNotEmpty == true
+                    ? conversation.title!
+                    : '新对话',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

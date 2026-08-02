@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
+import 'package:flutter/material.dart';
 
 class ChatComposer extends StatelessWidget {
   const ChatComposer({
@@ -14,6 +14,12 @@ class ChatComposer extends StatelessWidget {
 
   final TextEditingController? controller;
   final ValueChanged<String>? onSubmit;
+
+  void _submit() {
+    final text = controller?.text ?? '';
+    if (onSubmit == null || text.trim().isEmpty) return;
+    onSubmit!(text);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +55,8 @@ class ChatComposer extends StatelessWidget {
               child: TextField(
                 controller: controller,
                 textInputAction: TextInputAction.send,
-                onSubmitted: onSubmit,
+                onSubmitted: (_) => _submit(),
+                enabled: onSubmit != null,
                 style: TextStyle(
                   fontSize: AppTypography.base,
                   color: palette.foreground,
@@ -72,20 +79,13 @@ class ChatComposer extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: onSubmit == null ? null : _submit,
               visualDensity: VisualDensity.compact,
               icon: Icon(
-                Icons.graphic_eq,
-                color: palette.foreground,
-                size: AppSizes.iconXl,
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              visualDensity: VisualDensity.compact,
-              icon: Icon(
-                Icons.add_circle_outline,
-                color: palette.foreground,
+                Icons.send_rounded,
+                color: onSubmit == null
+                    ? palette.mutedForeground
+                    : palette.foreground,
                 size: AppSizes.iconXl,
               ),
             ),

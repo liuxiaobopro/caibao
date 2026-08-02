@@ -24,7 +24,10 @@ final class AppConfig {
       getEnv('APP_ENV', defaultValue: 'developing');
 
   // The base URL for the application's API.
-  static final String apiBaseUrl = getEnv('API_BASE_URL', defaultValue: 'https://api.myflutterapp.com');
+  static final String apiBaseUrl = getEnv(
+    'API_BASE_URL',
+    defaultValue: 'http://81.70.229.173:18082',
+  );
 
   // The path to the assets directory.
   static final String assetPath = getEnv('ASSET_PATH', defaultValue: 'assets');
