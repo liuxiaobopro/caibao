@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/resources/widgets/local_asset_widget.dart';
+import 'package:caibao/resources/widgets/local_asset_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /// Used in BottomSheetModal

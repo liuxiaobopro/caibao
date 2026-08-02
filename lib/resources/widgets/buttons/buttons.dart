@@ -1,11 +1,11 @@
-import '/resources/widgets/buttons/partials/transparency_button_widget.dart';
-import '/resources/widgets/buttons/partials/secondary_button_widget.dart';
-import '/resources/widgets/buttons/partials/primary_button_widget.dart';
-import '/resources/widgets/buttons/partials/text_only_button_widget.dart';
-import '/resources/widgets/buttons/partials/gradient_button_widget.dart';
-import '/resources/widgets/buttons/partials/rounded_button_widget.dart';
-import '/resources/widgets/buttons/partials/outlined_button_widget.dart' as app;
-import '/resources/widgets/buttons/partials/icon_button_widget.dart' as app;
+import 'package:caibao/resources/widgets/buttons/partials/transparency_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/secondary_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/primary_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/text_only_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/gradient_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/rounded_button_widget.dart';
+import 'package:caibao/resources/widgets/buttons/partials/outlined_button_widget.dart' as app;
+import 'package:caibao/resources/widgets/buttons/partials/icon_button_widget.dart' as app;
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 export 'package:nylo_framework/nylo_framework.dart'

@@ -1,9 +1,8 @@
-import '/config/app.dart';
-import '/app/networking/api_service.dart';
-import '/resources/widgets/theme_toggle_widget.dart';
-import '/bootstrap/extensions.dart';
-import '/resources/widgets/logo_widget.dart';
-import '/app/controllers/home_controller.dart';
+import 'package:caibao/config/app.dart';
+import 'package:caibao/resources/widgets/theme_toggle_widget.dart';
+import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/widgets/logo_widget.dart';
+import 'package:caibao/app/controllers/home_controller.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';

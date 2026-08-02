@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
 
 class TextOnlyButton extends StatefulAppButton {
   final Color? contentColor;

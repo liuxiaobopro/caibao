@@ -1,4 +1,4 @@
-import '/resources/pages/home_page.dart';
+import 'package:caibao/resources/pages/home_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Auth Route Guard

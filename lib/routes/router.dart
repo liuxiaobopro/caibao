@@ -1,5 +1,7 @@
-import '/resources/pages/not_found_page.dart';
-import '/resources/pages/home_page.dart';
+import 'package:caibao/resources/pages/profile_page.dart';
+import 'package:caibao/resources/pages/chat_page.dart';
+import 'package:caibao/resources/pages/not_found_page.dart';
+import 'package:caibao/resources/pages/home_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* App Router
@@ -10,8 +12,9 @@ import 'package:nylo_framework/nylo_framework.dart';
 | Learn more https://nylo.dev/docs/7.x/router
 |-------------------------------------------------------------------------- */
 
-appRouter() => nyRoutes((NyRouter router) {
-      router.add(HomePage.path).initialRoute();
-
+NyRouter appRouter() => nyRoutes((NyRouter router) {
+      router.add(ChatPage.path).initialRoute();
+      router.add(ProfilePage.path);
+      router.add(HomePage.path);
       router.add(NotFoundPage.path).unknownRoute();
 });

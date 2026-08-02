@@ -4,7 +4,7 @@
 |-------------------------------------------------------------------------- */
 
 import 'package:flutter/material.dart';
-import '/resources/widgets/toast_notification_widget.dart';
+import 'package:caibao/resources/widgets/toast_notification_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Toast Notification

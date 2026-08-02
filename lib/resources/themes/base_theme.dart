@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '/resources/themes/color_styles.dart';
-import '/resources/themes/tokens/app_radius.dart';
-import '/resources/themes/tokens/app_sizes.dart';
-import '/resources/themes/tokens/app_spacing.dart';
-import '/resources/themes/tokens/app_theme_tokens.dart';
-import '/config/design.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_theme_tokens.dart';
+import 'package:caibao/config/design.dart';
 import 'default_text_theme.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 

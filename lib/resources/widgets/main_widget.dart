@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '/config/localization.dart';
-import '/resources/widgets/loader_widget.dart';
+import 'package:caibao/config/localization.dart';
+import 'package:caibao/resources/widgets/loader_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /// Main entry point for the application

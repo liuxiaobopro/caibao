@@ -1,8 +1,8 @@
-import '/resources/themes/dark/dark_theme.dart';
-import '/resources/themes/light/light_theme.dart';
-import '/resources/themes/color_styles.dart';
-import '/resources/themes/dark/dark_theme_colors.dart';
-import '/resources/themes/light/light_theme_colors.dart';
+import 'package:caibao/resources/themes/dark/dark_theme.dart';
+import 'package:caibao/resources/themes/light/light_theme.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/dark/dark_theme_colors.dart';
+import 'package:caibao/resources/themes/light/light_theme_colors.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Flutter Themes

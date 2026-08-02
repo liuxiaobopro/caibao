@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '/resources/themes/base_theme.dart';
-import '/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/base_theme.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
 
 /* Dark Theme
 |--------------------------------------------------------------------------

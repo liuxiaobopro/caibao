@@ -1,6 +1,8 @@
-import '/app/controllers/home_controller.dart';
-import '/app/models/user.dart';
-import '/app/networking/api_service.dart';
+import 'package:caibao/app/models/chat_message.dart';
+import 'package:caibao/app/models/chat_conversation.dart';
+import 'package:caibao/app/controllers/home_controller.dart';
+import 'package:caibao/app/models/user.dart';
+import 'package:caibao/app/networking/api_service.dart';
 
 /* Model Decoders
 |--------------------------------------------------------------------------
@@ -17,6 +19,14 @@ final Map<Type, dynamic> modelDecoders = {
       List.from(data).map((json) => User.fromJson(json)).toList(),
   //
   User: (data) => User.fromJson(data),
+
+  List<ChatConversation>: (data) => List.from(data).map((json) => ChatConversation.fromJson(json)).toList(),
+
+  ChatConversation: (data) => ChatConversation.fromJson(data),
+
+  List<ChatMessage>: (data) => List.from(data).map((json) => ChatMessage.fromJson(json)).toList(),
+
+  ChatMessage: (data) => ChatMessage.fromJson(data),
 };
 
 /* API Decoders

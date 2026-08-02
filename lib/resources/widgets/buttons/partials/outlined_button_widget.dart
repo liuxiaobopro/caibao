@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
 
 class OutlinedButton extends StatefulAppButton {
   final Color? borderColor;

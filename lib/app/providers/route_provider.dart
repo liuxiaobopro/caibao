@@ -1,4 +1,4 @@
-import '/routes/router.dart';
+import 'package:caibao/routes/router.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class RouteProvider implements NyProvider {

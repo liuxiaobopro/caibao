@@ -1,9 +1,9 @@
-import '/config/storage_keys.dart';
-import '/config/toast_notification.dart';
-import '/bootstrap/decoders.dart';
-import '/config/design.dart';
-import '/bootstrap/theme.dart';
-import '/config/localization.dart';
+import 'package:caibao/config/storage_keys.dart';
+import 'package:caibao/config/toast_notification.dart';
+import 'package:caibao/bootstrap/decoders.dart';
+import 'package:caibao/config/design.dart';
+import 'package:caibao/bootstrap/theme.dart';
+import 'package:caibao/config/localization.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class AppProvider implements NyProvider {

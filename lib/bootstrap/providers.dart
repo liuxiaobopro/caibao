@@ -1,7 +1,7 @@
-import '/app/providers/push_notifications_provider.dart';
-import '/app/providers/app_provider.dart';
-import '/app/providers/event_provider.dart';
-import '/app/providers/route_provider.dart';
+import 'package:caibao/app/providers/push_notifications_provider.dart';
+import 'package:caibao/app/providers/app_provider.dart';
+import 'package:caibao/app/providers/event_provider.dart';
+import 'package:caibao/app/providers/route_provider.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Providers

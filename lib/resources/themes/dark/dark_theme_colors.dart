@@ -1,6 +1,6 @@
 import 'package:nylo_framework/nylo_framework.dart';
-import '/resources/themes/color_styles.dart';
-import '/resources/themes/tokens/caibao_palette.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/tokens/caibao_palette.dart';
 
 /* Dark Theme Colors
 |-------------------------------------------------------------------------- */

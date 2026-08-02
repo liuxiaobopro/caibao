@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Helpers

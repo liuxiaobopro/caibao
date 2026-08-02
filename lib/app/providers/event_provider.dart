@@ -1,4 +1,4 @@
-import '/bootstrap/events.dart';
+import 'package:caibao/bootstrap/events.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class EventProvider implements NyProvider {

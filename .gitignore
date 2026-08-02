@@ -58,3 +58,4 @@ lib/bootstrap/env.g.dart
 # Claude related
 CLAUDE.md
 .claude
+android/.kotlin/

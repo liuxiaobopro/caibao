@@ -1,5 +1,5 @@
-import '/app/events/authenticated_event.dart';
-import '/app/events/logout_event.dart';
+import 'package:caibao/app/events/authenticated_event.dart';
+import 'package:caibao/app/events/logout_event.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Events

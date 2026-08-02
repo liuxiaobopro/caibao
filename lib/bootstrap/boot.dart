@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '/config/app.dart';
-import '/resources/widgets/splash_screen.dart';
+import 'package:caibao/config/app.dart';
+import 'package:caibao/resources/widgets/splash_screen.dart';
 import '../resources/widgets/main_widget.dart';
-import '/bootstrap/providers.dart';
+import 'package:caibao/bootstrap/providers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Boot

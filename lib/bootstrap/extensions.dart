@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '/resources/themes/color_styles.dart';
-import '/resources/themes/tokens/app_theme_tokens.dart';
-import '/resources/themes/tokens/caibao_palette.dart';
-import '/bootstrap/helpers.dart';
+import 'package:caibao/resources/themes/color_styles.dart';
+import 'package:caibao/resources/themes/tokens/app_theme_tokens.dart';
+import 'package:caibao/resources/themes/tokens/caibao_palette.dart';
+import 'package:caibao/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /// [Text] Extensions

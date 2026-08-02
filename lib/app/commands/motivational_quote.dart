@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:nylo_framework/metro/ny_cli.dart';
 
 void main(List<String> arguments) => _MotivationalQuoteCommand(arguments).run();

@@ -1,5 +1,4 @@
-import 'dart:ui';
-import '/bootstrap/env.g.dart';
+import 'package:caibao/bootstrap/env.g.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'bootstrap/boot.dart';
 
