@@ -1,4 +1,4 @@
-package com.caibao.android
+package cn.shorx.caibao
 
 import android.content.ContentResolver
 import android.content.Context
