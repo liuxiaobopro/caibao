@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/config/localization.dart';
 import 'package:caibao/resources/widgets/loader_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /// Main entry point for the application
@@ -22,7 +24,8 @@ class Main extends StatefulWidget {
         initialRoute = nylo.getInitialRoute(),
         navigatorObservers = nylo.getNavigatorObservers(),
         nylo = nylo,
-        themeMode = ThemeMode.system;
+        // Always use MaterialApp.theme; NyThemeManager swaps themeData.
+        themeMode = ThemeMode.light;
 
   @override
   State<Main> createState() => _MainState();
@@ -30,11 +33,14 @@ class Main extends StatefulWidget {
 
 class _MainState extends NyPage<Main> {
   @override
-  get init => () {};
+  get init => () async {
+        await ThemePreference.restore(context);
+      };
 
   /// Map of lifecycle actions
   @override
-  get lifecycleActions => widget.nylo?.appLifecycleStates ?? <AppLifecycleState, dynamic Function()>{};
+  get lifecycleActions =>
+      widget.nylo?.appLifecycleStates ?? <AppLifecycleState, dynamic Function()>{};
 
   /// Disable dev panel for main app page.
   @override
@@ -71,6 +77,24 @@ class _MainState extends NyPage<Main> {
       initialRoute: widget.initialRoute,
       onGenerateRoute: widget.onGenerateRoute,
       onUnknownRoute: widget.onUnknownRoute,
+      builder: (context, child) {
+        final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
+        final overlay = theme.appBarTheme.systemOverlayStyle ??
+            SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness:
+                  isDark ? Brightness.light : Brightness.dark,
+              statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+              systemNavigationBarColor: theme.scaffoldBackgroundColor,
+              systemNavigationBarIconBrightness:
+                  isDark ? Brightness.light : Brightness.dark,
+            );
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlay,
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       localeResolutionCallback:
           (Locale? locale, Iterable<Locale> supportedLocales) {
         return locale;

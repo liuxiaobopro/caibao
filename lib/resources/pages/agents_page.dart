@@ -51,11 +51,12 @@ class _AgentsPageState extends NyPage<AgentsPage> {
     final descCtrl = TextEditingController(text: editing?.description ?? '');
     final instrCtrl = TextEditingController(text: editing?.instruction ?? '');
     var submitting = false;
+    final palette = context.palette;
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -183,10 +184,10 @@ class _AgentsPageState extends NyPage<AgentsPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: const Text('发现智能体'),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
           if (_tab == 'user')
@@ -231,7 +232,7 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                           itemBuilder: (context, index) {
                             final agent = _filtered[index];
                             return Material(
-                              color: const Color(0xFFF8F8F8),
+                              color: palette.secondary,
                               borderRadius: AppRadius.x2lAll,
                               child: InkWell(
                                 borderRadius: AppRadius.x2lAll,

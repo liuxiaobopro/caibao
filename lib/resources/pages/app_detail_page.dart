@@ -58,10 +58,10 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: Text(_name.isEmpty ? '应用' : _name),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
       ),
       body: _loading

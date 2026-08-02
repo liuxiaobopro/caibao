@@ -18,9 +18,7 @@ class ProfilePage extends NyStatefulWidget {
 }
 
 class _ProfilePageState extends NyPage<ProfilePage> {
-  static const Color _bg = Color(0xFFF5F5F5);
-
-  User? _user;
+    User? _user;
   String _themeMode = themeModeSystem;
   bool _loading = true;
 
@@ -55,9 +53,10 @@ class _ProfilePageState extends NyPage<ProfilePage> {
   Future<void> _openThemeSheet() async {
     final current = await ThemePreference.read();
     if (!mounted) return;
+    final palette = context.palette;
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -131,9 +130,9 @@ class _ProfilePageState extends NyPage<ProfilePage> {
     final avatarUrl = _user?.avatarUrl;
 
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: palette.background,
       appBar: AppBar(
-        backgroundColor: _bg,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
@@ -249,9 +248,10 @@ class _MenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: palette.card,
         borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.antiAlias,
@@ -356,7 +356,7 @@ class _MenuTile extends StatelessWidget {
             thickness: 0.5,
             indent: icon != null ? 60 : AppSpacing.x4,
             endIndent: AppSpacing.x4,
-            color: const Color(0xFFE8E8E8),
+            color: palette.muted,
           ),
       ],
     );

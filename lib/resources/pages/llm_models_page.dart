@@ -65,11 +65,12 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
     var category = editing?.category ?? 'multimodal';
     if (!_categories.contains(category)) category = 'multimodal';
     var submitting = false;
+    final palette = context.palette;
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -227,10 +228,10 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: const Text('模型配置'),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
           TextButton(onPressed: () => _openForm(), child: const Text('新建')),
@@ -255,7 +256,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                     itemBuilder: (context, index) {
                       final item = _items[index];
                       return Material(
-                        color: const Color(0xFFF8F8F8),
+                        color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
                         child: Padding(
                           padding: const EdgeInsets.all(AppSpacing.x4),

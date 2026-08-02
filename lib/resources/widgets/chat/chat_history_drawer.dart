@@ -51,7 +51,7 @@ class ChatHistoryDrawer extends StatelessWidget {
 
     return Drawer(
       width: width,
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: palette.sidebar,
       shape: const RoundedRectangleBorder(),
       child: SafeArea(
         child: Stack(
@@ -106,7 +106,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                       AppSpacing.x3,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: palette.card,
                       borderRadius: AppRadius.x3lAll,
                       boxShadow: AppShadows.sm,
                     ),
@@ -281,7 +281,7 @@ class ChatHistoryDrawer extends StatelessWidget {
               bottom: AppSpacing.x6,
               child: Center(
                 child: Material(
-                  color: Colors.white,
+                  color: palette.card,
                   elevation: 2,
                   shadowColor: const Color(0x26000000),
                   borderRadius: AppRadius.fullAll,
@@ -298,7 +298,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         borderRadius: AppRadius.fullAll,
-                        border: Border.all(color: const Color(0xFFE8E8E8)),
+                        border: Border.all(color: palette.muted),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

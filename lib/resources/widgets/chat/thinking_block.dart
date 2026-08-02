@@ -33,7 +33,7 @@ class _ThinkingBlockState extends State<ThinkingBlock> {
       decoration: BoxDecoration(
         color: palette.muted.withValues(alpha: 0.35),
         borderRadius: AppRadius.x2lAll,
-        border: Border.all(color: const Color(0xFFE5E5E5)),
+        border: Border.all(color: palette.muted),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -81,7 +81,7 @@ class _ThinkingBlockState extends State<ThinkingBlock> {
             ),
           ),
           if (expanded && body.isNotEmpty) ...[
-            const Divider(height: 1, color: Color(0xFFE5E5E5)),
+            Divider(height: 1, color: palette.muted),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.x3,

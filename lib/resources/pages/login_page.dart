@@ -84,7 +84,7 @@ class _LoginPageState extends NyPage<LoginPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.x6),

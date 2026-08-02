@@ -53,11 +53,12 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
     final domain = TextEditingController(text: editing?.domain ?? '');
     var forcePathStyle = editing?.forcePathStyle ?? true;
     var submitting = false;
+    final palette = context.palette;
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -231,10 +232,10 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: const Text('S3 存储设置'),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
           TextButton(onPressed: () => _openForm(), child: const Text('新建')),
@@ -259,7 +260,7 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
                     itemBuilder: (context, index) {
                       final item = _items[index];
                       return Material(
-                        color: const Color(0xFFF8F8F8),
+                        color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
                         child: Padding(
                           padding: const EdgeInsets.all(AppSpacing.x4),

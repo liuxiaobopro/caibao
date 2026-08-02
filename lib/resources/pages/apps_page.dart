@@ -65,10 +65,10 @@ class _AppsPageState extends NyPage<AppsPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: const Text('应用'),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
       ),
       body: _loading
@@ -90,7 +90,7 @@ class _AppsPageState extends NyPage<AppsPage> {
                     itemBuilder: (context, index) {
                       final app = _items[index];
                       return Material(
-                        color: const Color(0xFFF8F8F8),
+                        color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
                         child: InkWell(
                           borderRadius: AppRadius.x2lAll,

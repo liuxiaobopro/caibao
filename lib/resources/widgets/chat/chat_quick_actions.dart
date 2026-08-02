@@ -48,9 +48,9 @@ class ChatQuickActions extends StatelessWidget {
                   vertical: AppSpacing.x2,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: palette.card,
                   borderRadius: AppRadius.fullAll,
-                  border: Border.all(color: const Color(0xFFE5E5E5)),
+                  border: Border.all(color: palette.muted),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

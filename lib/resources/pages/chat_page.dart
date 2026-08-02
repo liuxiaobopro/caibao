@@ -266,7 +266,7 @@ class _ChatPageState extends NyPage<ChatPage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       drawer: ChatHistoryDrawer(
         user: _user,
         conversations: _conversations,

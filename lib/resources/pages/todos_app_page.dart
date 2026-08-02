@@ -162,10 +162,10 @@ class _TodosAppPageState extends NyPage<TodosAppPage> {
         : '待办清单';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
@@ -233,7 +233,7 @@ class _TodosAppPageState extends NyPage<TodosAppPage> {
                                   itemBuilder: (context, index) {
                                     final item = _todos[index];
                                     return Material(
-                                      color: const Color(0xFFF8F8F8),
+                                      color: palette.secondary,
                                       borderRadius: AppRadius.x2lAll,
                                       child: ListTile(
                                         leading: Checkbox(

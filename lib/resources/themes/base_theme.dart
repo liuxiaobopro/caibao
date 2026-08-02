@@ -118,8 +118,15 @@ ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
           textTheme.titleLarge!.copyWith(color: color.appBar.content),
       iconTheme: IconThemeData(color: color.appBar.content),
       elevation: 0,
-      systemOverlayStyle:
-          isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness:
+            isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: palette.background,
+        systemNavigationBarIconBrightness:
+            isDark ? Brightness.light : Brightness.dark,
+      ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(

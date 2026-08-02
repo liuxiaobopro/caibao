@@ -22,7 +22,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     final palette = context.palette;
 
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,

@@ -170,10 +170,10 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
     final palette = context.palette;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: palette.background,
       appBar: AppBar(
         title: Text(_title),
-        backgroundColor: Colors.white,
+        backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
@@ -234,7 +234,7 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                     content,
                                     style: TextStyle(
                                       fontSize: AppTypography.base,
-                                      color: Colors.white,
+                                      color: palette.brandOn,
                                       height: 1.4,
                                     ),
                                   ),
