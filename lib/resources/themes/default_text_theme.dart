@@ -1,83 +1,90 @@
 import 'package:flutter/material.dart';
+import 'tokens/app_typography.dart';
 
-/* Default text theme
+/* Default text theme — aligned with web Tailwind sizes
 |-------------------------------------------------------------------------- */
 
 const TextTheme defaultTextTheme = TextTheme(
-  // Display - Large, prominent text for hero sections
   displayLarge: TextStyle(
-    fontSize: 36.0,
-    fontWeight: FontWeight.w300,
+    fontSize: AppTypography.x4l,
+    fontWeight: FontWeight.w700,
     letterSpacing: -0.5,
+    height: 1.2,
   ),
   displayMedium: TextStyle(
-    fontSize: 28.0,
+    fontSize: AppTypography.x3l,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.25,
+    height: 1.25,
   ),
   displaySmall: TextStyle(
-    fontSize: 26.0,
-    fontWeight: FontWeight.w700,
-  ),
-
-  // Headline - Section headers
-  headlineLarge: TextStyle(
-    fontSize: 28.0,
+    fontSize: AppTypography.x2l,
     fontWeight: FontWeight.w600,
+    height: 1.3,
+  ),
+  headlineLarge: TextStyle(
+    fontSize: AppTypography.x2l,
+    fontWeight: FontWeight.w600,
+    height: AppTypography.leadingX2l / AppTypography.x2l,
   ),
   headlineMedium: TextStyle(
-    fontSize: 24.0,
+    fontSize: AppTypography.xl,
     fontWeight: FontWeight.w600,
+    height: AppTypography.leadingXl / AppTypography.xl,
   ),
   headlineSmall: TextStyle(
-    fontSize: 22.0,
+    fontSize: AppTypography.lg,
     fontWeight: FontWeight.w500,
+    height: AppTypography.leadingLg / AppTypography.lg,
   ),
-
-  // Title - Card titles, list headers
   titleLarge: TextStyle(
-    fontSize: 20.0,
+    fontSize: AppTypography.lg,
     fontWeight: FontWeight.w600,
+    height: AppTypography.leadingLg / AppTypography.lg,
   ),
   titleMedium: TextStyle(
-    fontSize: 16.0,
+    fontSize: AppTypography.base,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.15,
+    height: AppTypography.leadingBase / AppTypography.base,
   ),
   titleSmall: TextStyle(
-    fontSize: 14.0,
+    fontSize: AppTypography.sm,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
+    height: AppTypography.leadingSm / AppTypography.sm,
   ),
-
-  // Body - Main content text
   bodyLarge: TextStyle(
-    fontSize: 18.0,
+    fontSize: AppTypography.base,
     fontWeight: FontWeight.w400,
+    height: AppTypography.leadingLg / AppTypography.base,
   ),
   bodyMedium: TextStyle(
-    fontSize: 15.5,
+    fontSize: AppTypography.sm,
     fontWeight: FontWeight.w400,
+    height: AppTypography.leadingBase / AppTypography.sm,
   ),
   bodySmall: TextStyle(
-    fontSize: 13.0,
+    fontSize: AppTypography.xs,
     fontWeight: FontWeight.w400,
+    height: AppTypography.leadingXs / AppTypography.xs,
   ),
-
-  // Label - Buttons, chips, captions
   labelLarge: TextStyle(
-    fontSize: 14.0,
+    fontSize: AppTypography.sm,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
+    height: AppTypography.leadingSm / AppTypography.sm,
   ),
   labelMedium: TextStyle(
-    fontSize: 12.0,
+    fontSize: AppTypography.xs,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
+    height: AppTypography.leadingXs / AppTypography.xs,
   ),
   labelSmall: TextStyle(
     fontSize: 10.0,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.5,
+    height: 1.4,
   ),
 );

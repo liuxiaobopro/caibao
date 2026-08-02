@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '/resources/themes/color_styles.dart';
+import '/resources/themes/tokens/app_theme_tokens.dart';
+import '/resources/themes/tokens/caibao_palette.dart';
 import '/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -17,8 +19,18 @@ extension NyText on Text {
 
 /// [BuildContext] Extensions
 extension NyApp on BuildContext {
-  /// Get the current theme color
+  /// Nylo color styles (general / appBar / bottomTabBar / palette).
   ColorStyles get color => ThemeColorResolver.get(this);
+
+  /// Web-aligned semantic palette.
+  CaibaoPalette get palette => color.palette;
+
+  /// Theme tokens extension.
+  AppThemeTokens get tokens =>
+      Theme.of(this).extension<AppThemeTokens>() ??
+      (Theme.of(this).brightness == Brightness.dark
+          ? AppThemeTokens.dark()
+          : AppThemeTokens.light());
 }
 
 /// [TextStyle] Extensions

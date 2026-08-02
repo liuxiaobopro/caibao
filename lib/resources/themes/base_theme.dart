@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/resources/themes/color_styles.dart';
+import '/resources/themes/tokens/app_radius.dart';
+import '/resources/themes/tokens/app_sizes.dart';
+import '/resources/themes/tokens/app_spacing.dart';
+import '/resources/themes/tokens/app_theme_tokens.dart';
 import '/config/design.dart';
 import 'default_text_theme.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -8,52 +12,103 @@ import 'package:nylo_framework/nylo_framework.dart';
 /* Base Theme Builder
 |--------------------------------------------------------------------------
 | Shared theme configuration for light and dark themes.
-| Theme Config - config/theme.dart
+| Aligned with caibao-nextjs design tokens.
 |-------------------------------------------------------------------------- */
 
 ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
   final bool isDark = brightness == Brightness.dark;
+  final palette = color.palette;
+  final colorScheme = palette.toColorScheme(brightness);
 
   TextTheme textTheme = getAppTextTheme(
-      DesignConfig.appFont, defaultTextTheme.merge(_textTheme(color, isDark)));
+    DesignConfig.appFont,
+    defaultTextTheme.merge(_textTheme(color)),
+  );
+
+  final buttonShape = RoundedRectangleBorder(borderRadius: AppRadius.mdAll);
 
   return ThemeData(
     useMaterial3: true,
-    primaryColor: color.general.content,
-    primaryColorLight: isDark ? null : color.general.primaryAccent,
-    primaryColorDark: isDark ? color.general.content : null,
-    focusColor: color.general.content,
-    scaffoldBackgroundColor: color.general.background,
-    hintColor: isDark ? null : color.general.primaryAccent,
     brightness: brightness,
+    colorScheme: colorScheme,
+    primaryColor: palette.brand,
+    scaffoldBackgroundColor: palette.background,
+    canvasColor: palette.background,
+    cardColor: palette.card,
+    dividerColor: palette.muted,
+    focusColor: palette.ring.withValues(alpha: 0.5),
+    hintColor: palette.mutedForeground,
+    extensions: <ThemeExtension<dynamic>>[
+      isDark ? AppThemeTokens.dark() : AppThemeTokens.light(),
+    ],
     dividerTheme: DividerThemeData(
-      color: isDark ? Colors.grey[800] : Colors.grey[100],
+      color: palette.muted,
+      thickness: 1,
+      space: AppSpacing.x4,
+    ),
+    cardTheme: CardThemeData(
+      color: palette.card.withValues(alpha: 0.6),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.xlAll),
+      margin: EdgeInsets.zero,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: palette.card,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.xlAll),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: palette.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: palette.secondary.withValues(alpha: 0.5),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.x3,
+        vertical: AppSpacing.x2,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: AppRadius.mdAll,
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: AppRadius.mdAll,
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: AppRadius.mdAll,
+        borderSide: BorderSide(
+          color: palette.ring.withValues(alpha: 0.5),
+          width: AppSizes.focusRing,
+        ),
+      ),
+      hintStyle: TextStyle(color: palette.mutedForeground),
     ),
     datePickerTheme: isDark
         ? DatePickerThemeData(
-            headerForegroundColor: Colors.white,
-            weekdayStyle: const TextStyle(color: Colors.white),
+            headerForegroundColor: palette.foreground,
+            weekdayStyle: TextStyle(color: palette.foreground),
             dayForegroundColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.selected)) {
-                return Colors.black;
-              }
-              return Colors.white;
-            }),
+              (Set<WidgetState> states) {
+                if (states.contains(WidgetState.selected)) {
+                  return palette.brandOn;
+                }
+                return palette.foreground;
+              },
+            ),
           )
         : null,
     timePickerTheme: isDark
         ? TimePickerThemeData(
-            hourMinuteTextColor: Colors.white,
-            dialTextColor: Colors.white,
-            dayPeriodTextColor: Colors.white,
-            helpTextStyle: const TextStyle(color: Colors.white),
-            dayPeriodBorderSide: const BorderSide(color: Colors.white),
-            dialBackgroundColor: Colors.grey[800],
-            inputDecorationTheme: const InputDecorationTheme(
-              labelStyle: TextStyle(color: Colors.white),
-              hintStyle: TextStyle(color: Colors.white70),
-            ),
+            hourMinuteTextColor: palette.foreground,
+            dialTextColor: palette.foreground,
+            dayPeriodTextColor: palette.foreground,
+            helpTextStyle: TextStyle(color: palette.foreground),
+            dayPeriodBorderSide: BorderSide(color: palette.muted),
+            dialBackgroundColor: palette.secondary,
           )
         : null,
     appBarTheme: AppBarTheme(
@@ -62,21 +117,52 @@ ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
       titleTextStyle:
           textTheme.titleLarge!.copyWith(color: color.appBar.content),
       iconTheme: IconThemeData(color: color.appBar.content),
-      elevation: 1.0,
+      elevation: 0,
       systemOverlayStyle:
           isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
     ),
-    buttonTheme: ButtonThemeData(
-      buttonColor: color.general.content,
-      colorScheme: ColorScheme.light(primary: color.general.background),
-    ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(foregroundColor: color.general.content),
+      style: TextButton.styleFrom(
+        foregroundColor: palette.brand,
+        minimumSize: const Size(0, AppSizes.buttonMd),
+        shape: buttonShape,
+      ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: TextButton.styleFrom(
-          foregroundColor: color.general.content,
-          backgroundColor: color.general.background),
+      style: ElevatedButton.styleFrom(
+        foregroundColor: palette.brandOn,
+        backgroundColor: palette.brand,
+        disabledForegroundColor: palette.brandOn.withValues(alpha: 0.6),
+        disabledBackgroundColor: palette.brand.withValues(alpha: 0.5),
+        minimumSize: const Size(0, AppSizes.buttonMd),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+        elevation: 0,
+        shape: buttonShape,
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        foregroundColor: palette.brandOn,
+        backgroundColor: palette.brand,
+        minimumSize: const Size(0, AppSizes.buttonMd),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+        shape: buttonShape,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: palette.foreground,
+        minimumSize: const Size(0, AppSizes.buttonMd),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+        side: BorderSide(color: palette.muted),
+        shape: buttonShape,
+      ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: palette.brand,
+      foregroundColor: palette.brandOn,
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.xlAll),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: color.bottomTabBar.background,
@@ -87,55 +173,40 @@ ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
           TextStyle(color: color.bottomTabBar.labelUnselected),
       selectedLabelStyle: TextStyle(color: color.bottomTabBar.labelSelected),
       selectedItemColor: color.bottomTabBar.labelSelected,
+      unselectedItemColor: color.bottomTabBar.labelUnselected,
+      type: BottomNavigationBarType.fixed,
+      elevation: 0,
+    ),
+    chipTheme: ChipThemeData(
+      backgroundColor: palette.secondary,
+      selectedColor: palette.brandContainer,
+      labelStyle: TextStyle(color: palette.foreground, fontSize: 12),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
+      side: BorderSide.none,
     ),
     textTheme: textTheme,
-    colorScheme: isDark
-        ? ColorScheme.dark(
-            primary: color.general.primaryAccent,
-            onSurface: Colors.black,
-          )
-        : ColorScheme.light(
-            surface: color.general.background,
-            onSecondary: Colors.white,
-            primary: color.general.primaryAccent,
-          ),
   );
 }
 
-/* Text Theme
-|-------------------------------------------------------------------------*/
+TextTheme _textTheme(ColorStyles colors) {
+  final Color content = colors.palette.foreground;
+  final Color muted = colors.palette.mutedForeground;
 
-TextTheme _textTheme(ColorStyles colors, bool isDark) {
-  TextTheme textTheme = TextTheme(
-    displayLarge: TextStyle(color: colors.general.content),
-    displayMedium: TextStyle(color: colors.general.content),
-    displaySmall: TextStyle(color: colors.general.content),
-    headlineLarge: TextStyle(color: colors.general.content),
-    headlineMedium: TextStyle(color: colors.general.content),
-    headlineSmall: TextStyle(color: colors.general.content),
-    titleLarge: TextStyle(color: colors.general.content),
-    titleMedium: TextStyle(color: colors.general.content),
-    titleSmall: TextStyle(color: colors.general.content),
-    bodyLarge: TextStyle(color: colors.general.content),
-    bodyMedium: TextStyle(color: colors.general.content),
-    bodySmall: TextStyle(color: colors.general.content),
-    labelLarge: TextStyle(color: colors.general.content),
-    labelMedium: TextStyle(color: colors.general.content),
-    labelSmall: TextStyle(color: colors.general.content),
-  );
-
-  Color alphaColor = colors.general.content.withAlpha((255.0 * 0.8).round());
-
-  if (isDark) {
-    return textTheme.copyWith(
-      titleLarge: TextStyle(color: alphaColor),
-      labelLarge: TextStyle(color: alphaColor),
-      bodySmall: TextStyle(color: alphaColor),
-      bodyMedium: TextStyle(color: alphaColor),
-    );
-  }
-
-  return textTheme.copyWith(
-    labelLarge: TextStyle(color: alphaColor),
+  return TextTheme(
+    displayLarge: TextStyle(color: content),
+    displayMedium: TextStyle(color: content),
+    displaySmall: TextStyle(color: content),
+    headlineLarge: TextStyle(color: content),
+    headlineMedium: TextStyle(color: content),
+    headlineSmall: TextStyle(color: content),
+    titleLarge: TextStyle(color: content),
+    titleMedium: TextStyle(color: content),
+    titleSmall: TextStyle(color: content),
+    bodyLarge: TextStyle(color: content),
+    bodyMedium: TextStyle(color: content),
+    bodySmall: TextStyle(color: muted),
+    labelLarge: TextStyle(color: content),
+    labelMedium: TextStyle(color: muted),
+    labelSmall: TextStyle(color: muted),
   );
 }

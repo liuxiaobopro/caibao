@@ -1,35 +1,37 @@
-import 'package:flutter/material.dart';
 import '/resources/themes/color_styles.dart';
+import '/resources/themes/tokens/caibao_palette.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Light Theme Colors
 |-------------------------------------------------------------------------- */
 
 class LightThemeColors extends ColorStyles {
-  /// Colors for general use.
+  static const CaibaoPalette _p = CaibaoPalette.light;
+
   @override
-  GeneralColors get general => const GeneralColors(
-        background: Color(0xFFFFFFFF),
-        content: Color(0xFF000000),
-        primaryAccent: Color(0xFF0045a0),
-        surface: Colors.white,
-        surfaceContent: Colors.black,
+  CaibaoPalette get palette => _p;
+
+  @override
+  GeneralColors get general => GeneralColors(
+        background: _p.background,
+        content: _p.foreground,
+        primaryAccent: _p.brand,
+        surface: _p.card,
+        surfaceContent: _p.cardForeground,
       );
 
-  /// Colors for the app bar.
   @override
-  AppBarColors get appBar => const AppBarColors(
-        background: Colors.white,
-        content: Colors.black,
+  AppBarColors get appBar => AppBarColors(
+        background: _p.card,
+        content: _p.foreground,
       );
 
-  /// Colors for the bottom tab bar.
   @override
-  BottomTabBarColors get bottomTabBar => const BottomTabBarColors(
-        background: Colors.white,
-        iconSelected: Colors.blue,
-        iconUnselected: Colors.black54,
-        labelSelected: Colors.black,
-        labelUnselected: Colors.black45,
+  BottomTabBarColors get bottomTabBar => BottomTabBarColors(
+        background: _p.card,
+        iconSelected: _p.brand,
+        iconUnselected: _p.mutedForeground,
+        labelSelected: _p.brand,
+        labelUnselected: _p.mutedForeground,
       );
 }

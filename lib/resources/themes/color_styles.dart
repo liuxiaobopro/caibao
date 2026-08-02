@@ -1,4 +1,5 @@
 import 'package:nylo_framework/nylo_framework.dart';
+import 'tokens/caibao_palette.dart';
 
 /// Interface for your base styles.
 /// Add more styles here and then implement in
@@ -16,4 +17,7 @@ abstract class ColorStyles extends ThemeColor {
   /// Colors for the bottom tab bar.
   @override
   BottomTabBarColors get bottomTabBar;
+
+  /// Web-aligned semantic palette (caibao-nextjs globals.css).
+  CaibaoPalette get palette;
 }

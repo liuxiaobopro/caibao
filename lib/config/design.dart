@@ -13,8 +13,8 @@ import 'package:google_fonts/google_fonts.dart';
 |-------------------------------------------------------------------------- */
 
 final class DesignConfig {
-  // App Font - Google Fonts
-  static final TextStyle appFont = GoogleFonts.outfit();
+  // App Font — aligned with web Noto Sans SC
+  static final TextStyle appFont = GoogleFonts.notoSansSc();
 
   // App Logo - Use the `Logo()` widget to display your logo
   static final Widget logo = const Logo();
