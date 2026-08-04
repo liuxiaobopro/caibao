@@ -130,6 +130,17 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Patch Flutter plugins remove jcenter
+        run: |
+          set -euo pipefail
+          # getuiflut 等插件仍含 jcenter()，Gradle 9 会直接失败
+          while IFS= read -r -d '' f; do
+            if grep -q 'jcenter()' "$f"; then
+              sed -i 's/jcenter()/mavenCentral()/g' "$f"
+              echo "patched: $f"
+            fi
+          done < <(find "$HOME/.pub-cache" -path '*/android/build.gradle' -print0 2>/dev/null || true)
+
       - name: Build release APK
         run: flutter build apk --release
 

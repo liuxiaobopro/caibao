@@ -23,4 +23,15 @@ plugins {
     id "org.jetbrains.kotlin.android" version "2.2.21" apply false
 }
 
+// Gradle 9 已移除 jcenter()；第三方插件（如 getuiflut）仍会调用，做兼容转发
+gradle.beforeProject { project ->
+    def patchRepos = { repos ->
+        repos.metaClass.jcenter = { ->
+            repos.mavenCentral()
+        }
+    }
+    patchRepos(project.buildscript.repositories)
+    patchRepos(project.repositories)
+}
+
 include ":app"
