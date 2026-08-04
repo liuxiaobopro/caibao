@@ -40,6 +40,9 @@ jobs:
           GETUI_APP_ID: ${{ secrets.GETUI_APP_ID }}
           GETUI_APP_KEY: ${{ secrets.GETUI_APP_KEY }}
           GETUI_APP_SECRET: ${{ secrets.GETUI_APP_SECRET }}
+          BUGLY_ENABLED: ${{ secrets.BUGLY_ENABLED }}
+          BUGLY_ANDROID_APP_ID: ${{ secrets.BUGLY_ANDROID_APP_ID }}
+          BUGLY_IOS_APP_ID: ${{ secrets.BUGLY_IOS_APP_ID }}
           APP_KEY: ${{ secrets.APP_KEY }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: |
@@ -47,10 +50,13 @@ jobs:
           cp .env-example .env
           export APP_KEY_VALUE="${APP_KEY:-Sv8XNVLWj1AtEgONo3FTyC2IcW0JNKhu}"
           export GETUI_ENABLED_VALUE="${GETUI_ENABLED:-false}"
+          export BUGLY_ENABLED_VALUE="${BUGLY_ENABLED:-false}"
           export API_BASE_URL_VALUE="${API_BASE_URL:-http://81.70.229.173:18082}"
           export GETUI_APP_ID="${GETUI_APP_ID:-}"
           export GETUI_APP_KEY="${GETUI_APP_KEY:-}"
           export GETUI_APP_SECRET="${GETUI_APP_SECRET:-}"
+          export BUGLY_ANDROID_APP_ID="${BUGLY_ANDROID_APP_ID:-}"
+          export BUGLY_IOS_APP_ID="${BUGLY_IOS_APP_ID:-}"
 
           python3 - <<'PY'
           import os
@@ -58,12 +64,23 @@ jobs:
 
           path = Path(".env")
           lines = path.read_text(encoding="utf-8").splitlines()
+          quoted = {
+              "GETUI_APP_ID",
+              "GETUI_APP_KEY",
+              "GETUI_APP_SECRET",
+              "API_BASE_URL",
+              "BUGLY_ANDROID_APP_ID",
+              "BUGLY_IOS_APP_ID",
+          }
           updates = {
               "APP_KEY": os.environ["APP_KEY_VALUE"],
               "GETUI_ENABLED": os.environ["GETUI_ENABLED_VALUE"],
               "GETUI_APP_ID": os.environ.get("GETUI_APP_ID", ""),
               "GETUI_APP_KEY": os.environ.get("GETUI_APP_KEY", ""),
               "GETUI_APP_SECRET": os.environ.get("GETUI_APP_SECRET", ""),
+              "BUGLY_ENABLED": os.environ["BUGLY_ENABLED_VALUE"],
+              "BUGLY_ANDROID_APP_ID": os.environ.get("BUGLY_ANDROID_APP_ID", ""),
+              "BUGLY_IOS_APP_ID": os.environ.get("BUGLY_IOS_APP_ID", ""),
               "API_BASE_URL": os.environ["API_BASE_URL_VALUE"],
           }
 
@@ -76,7 +93,7 @@ jobs:
               key, _, _ = line.partition("=")
               if key in updates:
                   val = updates[key]
-                  if key in ("GETUI_APP_ID", "GETUI_APP_KEY", "GETUI_APP_SECRET", "API_BASE_URL"):
+                  if key in quoted:
                       out.append(f'{key}="{val}"')
                   else:
                       out.append(f"{key}={val}")
@@ -87,7 +104,7 @@ jobs:
           for key, val in updates.items():
               if key in seen:
                   continue
-              if key in ("GETUI_APP_ID", "GETUI_APP_KEY", "GETUI_APP_SECRET", "API_BASE_URL"):
+              if key in quoted:
                   out.append(f'{key}="{val}"')
               else:
                   out.append(f"{key}={val}")

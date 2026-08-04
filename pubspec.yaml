@@ -28,6 +28,7 @@ dependencies:
   flutter_markdown: ^0.7.7+1
   url_launcher: ^6.3.2
   getuiflut: ^0.2.41
+  flutter_bugly: ^1.1.1
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

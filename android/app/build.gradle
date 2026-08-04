@@ -53,6 +53,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        checkReleaseBuilds false
     }
 
     defaultConfig {
@@ -66,6 +67,9 @@ android {
         manifestPlaceholders = [
             GETUI_APPID: localProperties.getProperty('getui.appid', '')
         ]
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     signingConfigs {
