@@ -63,8 +63,8 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        // 与 .env GETUI_APP_ID 保持一致；可在 local.properties 写 getui.appid=xxx
-        manifestPlaceholders = [
+        // 必须用 +=，避免覆盖 Flutter 注入的 applicationName
+        manifestPlaceholders += [
             GETUI_APPID: localProperties.getProperty('getui.appid', '')
         ]
         ndk {
