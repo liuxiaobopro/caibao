@@ -23,6 +23,8 @@ final class StorageKeysConfig {
 
   static final StorageKey bearerToken = 'SK_BEARER_TOKEN';
 
+  static final StorageKey getuiClientId = 'SK_GETUI_CLIENT_ID';
+
   // static final StorageKey coins = 'SK_COINS';
 
   /// Add your storage keys here...
