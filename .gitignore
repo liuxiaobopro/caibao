@@ -59,3 +59,4 @@ lib/bootstrap/env.g.dart
 CLAUDE.md
 .claude
 android/.kotlin/
+pubspec.lock
