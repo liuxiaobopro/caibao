@@ -26,6 +26,17 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+          cache: gradle
+          cache-dependency-path: |
+            android/*.gradle
+            android/app/*.gradle
+            android/gradle/wrapper/gradle-wrapper.properties
+            android/gradle.properties
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -33,6 +44,9 @@ jobs:
           flutter-version: "3.44.8"
           channel: stable
           cache: true
+          pub-cache: true
+          cache-key: flutter-:os:-:channel:-:version:-:arch:-:hash:
+          pub-cache-key: flutter-pub-:os:-:channel:-:version:-:arch:-:hash:
 
       - name: Prepare .env
         env:
