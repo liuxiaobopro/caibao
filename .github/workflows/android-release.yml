@@ -1,0 +1,125 @@
+name: Android Release APK
+
+on:
+  push:
+    branches:
+      - android
+
+concurrency:
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.8"
+          channel: stable
+          cache: true
+
+      - name: Prepare .env
+        env:
+          GETUI_ENABLED: ${{ secrets.GETUI_ENABLED }}
+          GETUI_APP_ID: ${{ secrets.GETUI_APP_ID }}
+          GETUI_APP_KEY: ${{ secrets.GETUI_APP_KEY }}
+          GETUI_APP_SECRET: ${{ secrets.GETUI_APP_SECRET }}
+          APP_KEY: ${{ secrets.APP_KEY }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          cp .env-example .env
+          export APP_KEY_VALUE="${APP_KEY:-Sv8XNVLWj1AtEgONo3FTyC2IcW0JNKhu}"
+          export GETUI_ENABLED_VALUE="${GETUI_ENABLED:-false}"
+          export API_BASE_URL_VALUE="${API_BASE_URL:-http://81.70.229.173:18082}"
+          export GETUI_APP_ID="${GETUI_APP_ID:-}"
+          export GETUI_APP_KEY="${GETUI_APP_KEY:-}"
+          export GETUI_APP_SECRET="${GETUI_APP_SECRET:-}"
+
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          path = Path(".env")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          updates = {
+              "APP_KEY": os.environ["APP_KEY_VALUE"],
+              "GETUI_ENABLED": os.environ["GETUI_ENABLED_VALUE"],
+              "GETUI_APP_ID": os.environ.get("GETUI_APP_ID", ""),
+              "GETUI_APP_KEY": os.environ.get("GETUI_APP_KEY", ""),
+              "GETUI_APP_SECRET": os.environ.get("GETUI_APP_SECRET", ""),
+              "API_BASE_URL": os.environ["API_BASE_URL_VALUE"],
+          }
+
+          out = []
+          seen = set()
+          for line in lines:
+              if not line or line.lstrip().startswith("#") or "=" not in line:
+                  out.append(line)
+                  continue
+              key, _, _ = line.partition("=")
+              if key in updates:
+                  val = updates[key]
+                  if key in ("GETUI_APP_ID", "GETUI_APP_KEY", "GETUI_APP_SECRET", "API_BASE_URL"):
+                      out.append(f'{key}="{val}"')
+                  else:
+                      out.append(f"{key}={val}")
+                  seen.add(key)
+              else:
+                  out.append(line)
+
+          for key, val in updates.items():
+              if key in seen:
+                  continue
+              if key in ("GETUI_APP_ID", "GETUI_APP_KEY", "GETUI_APP_SECRET", "API_BASE_URL"):
+                  out.append(f'{key}="{val}"')
+              else:
+                  out.append(f"{key}={val}")
+
+          path.write_text("\n".join(out) + "\n", encoding="utf-8")
+          PY
+
+      - name: Generate env.g.dart
+        run: dart run nylo_framework:main make:env
+
+      - name: Configure Getui AppID
+        env:
+          GETUI_APP_ID: ${{ secrets.GETUI_APP_ID }}
+        run: |
+          set -euo pipefail
+          touch android/local.properties
+          # remove old getui.appid if present
+          if grep -q '^getui.appid=' android/local.properties; then
+            sed -i '/^getui.appid=/d' android/local.properties
+          fi
+          echo "getui.appid=${GETUI_APP_ID:-}" >> android/local.properties
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: caibao-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
