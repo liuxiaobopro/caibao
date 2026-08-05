@@ -2,9 +2,10 @@ import 'package:caibao/app/utils/message_segments.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
+import 'package:caibao/resources/widgets/chat/message_card.dart';
 import 'package:caibao/resources/widgets/chat/thinking_block.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class AssistantMessageBody extends StatelessWidget {
   const AssistantMessageBody({super.key, required this.content});
@@ -25,6 +26,8 @@ class AssistantMessageBody extends StatelessWidget {
               text: segment.text,
               streaming: segment.streaming,
             )
+          else if (segment is CardSegment)
+            MessageCardView(card: segment.card)
           else if (segment is TextSegment && segment.text.trim().isNotEmpty)
             MarkdownBody(
               data: segment.text,

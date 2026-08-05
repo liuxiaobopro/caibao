@@ -7,14 +7,12 @@ import 'package:caibao/app/networking/chat_stream_client.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
-import 'package:caibao/app/utils/message_segments.dart';
+import 'package:caibao/resources/widgets/chat/assistant_message_body.dart';
 import 'package:caibao/resources/widgets/chat/chat_app_bar.dart';
 import 'package:caibao/resources/widgets/chat/chat_composer.dart';
 import 'package:caibao/resources/widgets/chat/chat_history_drawer.dart';
 import 'package:caibao/resources/widgets/chat/chat_quick_actions.dart';
-import 'package:caibao/resources/widgets/chat/thinking_block.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class ChatPage extends NyStatefulWidget {
@@ -239,7 +237,7 @@ class _ChatPageState extends NyPage<ChatPage> {
               _messages[_messages.length - 1] = ChatMessage(
                 id: event.messageId ?? last.id,
                 role: ChatMessageRole.assistant,
-                content: last.content,
+                content: event.content ?? last.content,
                 createdAt: last.createdAt,
                 status: 'done',
               );
@@ -369,7 +367,6 @@ class _ChatPageState extends NyPage<ChatPage> {
                                   );
                                 }
 
-                                final segments = parseMessageSegments(content);
                                 return Align(
                                   alignment: Alignment.centerLeft,
                                   child: Container(
@@ -389,47 +386,8 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       color: palette.assistantBubble,
                                       borderRadius: BorderRadius.circular(18),
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        for (final segment in segments)
-                                          if (segment is ThinkingSegment)
-                                            ThinkingBlock(
-                                              text: segment.text,
-                                              streaming: segment.streaming,
-                                            )
-                                          else if (segment is TextSegment &&
-                                              segment.text.trim().isNotEmpty)
-                                            MarkdownBody(
-                                              data: segment.text,
-                                              selectable: true,
-                                              styleSheet: MarkdownStyleSheet
-                                                      .fromTheme(
-                                                Theme.of(context),
-                                              )
-                                                  .copyWith(
-                                                p: TextStyle(
-                                                  fontSize: 16,
-                                                  color: palette.foreground,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 1.55,
-                                                ),
-                                                strong: TextStyle(
-                                                  fontSize: 16,
-                                                  color: palette.foreground,
-                                                  fontWeight: FontWeight.w600,
-                                                  height: 1.55,
-                                                ),
-                                                listBullet: TextStyle(
-                                                  fontSize: 16,
-                                                  color: palette.foreground,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 1.55,
-                                                ),
-                                              ),
-                                            ),
-                                      ],
+                                    child: AssistantMessageBody(
+                                      content: content,
                                     ),
                                   ),
                                 );

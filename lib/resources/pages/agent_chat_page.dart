@@ -133,7 +133,7 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
               _messages[_messages.length - 1] = ChatMessage(
                 id: event.messageId ?? last.id,
                 role: ChatMessageRole.assistant,
-                content: last.content,
+                content: event.content ?? last.content,
                 createdAt: last.createdAt,
                 status: 'done',
               );

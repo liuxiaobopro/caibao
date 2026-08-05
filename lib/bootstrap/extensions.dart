@@ -22,15 +22,15 @@ extension NyApp on BuildContext {
   /// Nylo color styles (general / appBar / bottomTabBar / palette).
   ColorStyles get color => ThemeColorResolver.get(this);
 
-  /// Web-aligned semantic palette.
-  CaibaoPalette get palette => color.palette;
-
-  /// Theme tokens extension.
+  /// Theme tokens extension（订阅 Theme.of，切主题自动 rebuild）。
   AppThemeTokens get tokens =>
       Theme.of(this).extension<AppThemeTokens>() ??
       (Theme.of(this).brightness == Brightness.dark
           ? AppThemeTokens.dark()
           : AppThemeTokens.light());
+
+  /// Web-aligned semantic palette.
+  CaibaoPalette get palette => tokens.palette;
 }
 
 /// [TextStyle] Extensions

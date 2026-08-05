@@ -154,6 +154,7 @@ class _TodoAppState extends State<TodoApp> {
             icon: Icon(
               Icons.create_new_folder_outlined,
               color: palette.foreground,
+              size: AppSizes.iconXl,
             ),
             tooltip: '新建分组',
           ),
@@ -165,13 +166,15 @@ class _TodoAppState extends State<TodoApp> {
                   children: [
                     if (_groups.isNotEmpty)
                       SizedBox(
-                        height: 44,
+                        height: AppSizes.chipBar,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.page,
+                          ),
                           itemCount: _groups.length,
                           separatorBuilder: (_, _) =>
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.gapSm),
                           itemBuilder: (context, index) {
                             final group = _groups[index];
                             final selected = group.id == _activeGroupId;
@@ -188,13 +191,14 @@ class _TodoAppState extends State<TodoApp> {
                           },
                         ),
                       ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.gapSm),
                     Expanded(
                       child: _groups.isEmpty
                           ? Center(
                               child: Text(
                                 '暂无分组，点击右上角新建',
                                 style: TextStyle(
+                                  fontSize: AppTypography.base,
                                   color: palette.mutedForeground,
                                 ),
                               ),
@@ -208,21 +212,25 @@ class _TodoAppState extends State<TodoApp> {
                                       child: Text(
                                         '暂无待办',
                                         style: TextStyle(
+                                          fontSize: AppTypography.base,
                                           color: palette.mutedForeground,
                                         ),
                                       ),
                                     )
                                   : ListView.separated(
-                                      padding: const EdgeInsets.all(16),
+                                      padding: const EdgeInsets.all(
+                                        AppSpacing.page,
+                                      ),
                                       itemCount: _todos.length,
                                       separatorBuilder: (_, _) =>
-                                          const SizedBox(height: 8),
+                                          const SizedBox(
+                                        height: AppSpacing.gapSm,
+                                      ),
                                       itemBuilder: (context, index) {
                                         final item = _todos[index];
                                         return Material(
                                           color: palette.secondary,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
+                                          borderRadius: AppRadius.x2lAll,
                                           child: ListTile(
                                             leading: Checkbox(
                                               value: item.done,
@@ -232,6 +240,7 @@ class _TodoAppState extends State<TodoApp> {
                                             title: Text(
                                               item.title ?? '',
                                               style: TextStyle(
+                                                fontSize: AppTypography.base,
                                                 decoration: item.done
                                                     ? TextDecoration
                                                         .lineThrough
@@ -247,6 +256,7 @@ class _TodoAppState extends State<TodoApp> {
                                               icon: Icon(
                                                 Icons.delete_outline,
                                                 color: palette.mutedForeground,
+                                                size: AppSizes.iconXl,
                                               ),
                                             ),
                                           ),
@@ -258,7 +268,12 @@ class _TodoAppState extends State<TodoApp> {
                       SafeArea(
                         top: false,
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.page,
+                            AppSpacing.x2,
+                            AppSpacing.page,
+                            AppSpacing.x3,
+                          ),
                           child: Row(
                             children: [
                               Expanded(
@@ -267,17 +282,20 @@ class _TodoAppState extends State<TodoApp> {
                                   decoration: InputDecoration(
                                     hintText: '添加待办',
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: AppRadius.x2lAll,
                                     ),
                                     isDense: true,
                                   ),
                                   onSubmitted: (_) => _addTodo(),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.gapSm),
                               IconButton.filled(
                                 onPressed: _addTodo,
-                                icon: const Icon(Icons.add),
+                                icon: Icon(
+                                  Icons.add,
+                                  size: AppSizes.iconXl,
+                                ),
                               ),
                             ],
                           ),

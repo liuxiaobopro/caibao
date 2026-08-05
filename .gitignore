@@ -60,3 +60,4 @@ CLAUDE.md
 .claude
 android/.kotlin/
 pubspec.lock
+pubspec.yaml.bak

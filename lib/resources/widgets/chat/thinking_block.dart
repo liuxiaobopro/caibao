@@ -3,7 +3,7 @@ import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 class ThinkingBlock extends StatefulWidget {
   const ThinkingBlock({
