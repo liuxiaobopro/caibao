@@ -1,7 +1,4 @@
-import 'package:caibao/app/events/logout_event.dart';
-import 'package:caibao/app/models/user.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
+import 'package:caibao/app/controllers/profile_controller.dart';
 import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/llm_models_page.dart';
@@ -10,44 +7,22 @@ import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class ProfilePage extends NyStatefulWidget {
+class ProfilePage extends NyStatefulWidget<ProfileController> {
   static RouteView path = ('/profile', (_) => ProfilePage());
 
   ProfilePage({super.key}) : super(child: () => _ProfilePageState());
 }
 
 class _ProfilePageState extends NyPage<ProfilePage> {
-  User? _user;
-  String _themeMode = themeModeSystem;
-  bool _loading = true;
+  ProfileController get controller => widget.controller;
 
   @override
   get init => () async {
-        _themeMode = await ThemePreference.read();
-        await _loadUser();
+        await controller.bootstrap();
       };
 
   @override
   bool get stateManaged => false;
-
-  Future<void> _loadUser() async {
-    setState(() => _loading = true);
-    try {
-      final me = await api<ApiService>((request) => request.fetchMe());
-      if (!mounted) return;
-      setState(() => _user = me);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-      final auth = Auth.data();
-      if (auth is Map && mounted) {
-        setState(() => _user = User.fromJson(auth));
-      }
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
 
   Future<void> _openThemeSheet() async {
     final current = await ThemePreference.read();
@@ -75,8 +50,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                       ? Icon(Icons.check, color: context.palette.brand)
                       : null,
                   onTap: () async {
-                    await ThemePreference.apply(context, option.$1);
-                    if (mounted) setState(() => _themeMode = option.$1);
+                    await controller.applyTheme(option.$1);
                     if (ctx.mounted) Navigator.pop(ctx);
                   },
                 ),
@@ -106,27 +80,17 @@ class _ProfilePageState extends NyPage<ProfilePage> {
       ),
     );
     if (ok == true) {
-      await event<LogoutEvent>();
-    }
-  }
-
-  String get _themeLabel {
-    switch (_themeMode) {
-      case themeModeLight:
-        return '明亮';
-      case themeModeDark:
-        return '暗黑';
-      default:
-        return '系统';
+      await controller.logout();
     }
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
-    final nickname = _user?.displayName ?? '用户';
+    final user = controller.user;
+    final nickname = user?.displayName ?? '用户';
     final initial = nickname.isNotEmpty ? nickname.characters.first : '用';
-    final avatarUrl = _user?.avatarUrl;
+    final avatarUrl = user?.avatarUrl;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -153,7 +117,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
           ),
         ],
       ),
-      body: _loading
+      body: controller.loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
@@ -215,10 +179,10 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                         ),
                       ],
                     ),
-                    if (_user?.caibaoId.isNotEmpty == true) ...[
+                    if (user?.caibaoId.isNotEmpty == true) ...[
                       const SizedBox(height: 4),
                       Text(
-                        '菜包号: ${_user!.caibaoId}',
+                        '菜包号: ${user!.caibaoId}',
                         style: TextStyle(
                           fontSize: 13,
                           color: palette.mutedForeground,
@@ -270,7 +234,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                       label: '主题',
                       icon: Icons.palette_outlined,
                       iconBg: const Color(0xFF10B981),
-                      trailingText: _themeLabel,
+                      trailingText: controller.themeLabel,
                       onTap: _openThemeSheet,
                       showDivider: false,
                     ),

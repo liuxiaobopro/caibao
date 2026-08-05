@@ -1,6 +1,5 @@
+import 'package:caibao/app/controllers/agents_controller.dart';
 import 'package:caibao/app/models/agent.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/agent_chat_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
@@ -9,42 +8,22 @@ import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class AgentsPage extends NyStatefulWidget {
+class AgentsPage extends NyStatefulWidget<AgentsController> {
   static RouteView path = ('/agents', (_) => AgentsPage());
 
   AgentsPage({super.key}) : super(child: () => _AgentsPageState());
 }
 
 class _AgentsPageState extends NyPage<AgentsPage> {
-  List<Agent> _items = [];
-  bool _loading = true;
-  String _tab = 'system';
+  AgentsController get controller => widget.controller;
 
   @override
   get init => () async {
-        await _refresh();
+        await controller.refresh();
       };
 
   @override
   bool get stateManaged => false;
-
-  Future<void> _refresh() async {
-    setState(() => _loading = true);
-    try {
-      final items = await api<ApiService>((r) => r.listAgents());
-      if (!mounted) return;
-      setState(() => _items = items ?? []);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  List<Agent> get _filtered =>
-      _items.where((a) => a.scope == _tab).toList();
 
   Future<void> _openForm({Agent? editing}) async {
     final nameCtrl = TextEditingController(text: editing?.name ?? '');
@@ -99,41 +78,15 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                     onPressed: submitting
                         ? null
                         : () async {
-                            final name = nameCtrl.text.trim();
-                            final instruction = instrCtrl.text.trim();
-                            if (name.isEmpty || instruction.isEmpty) {
-                              showToastSorry(description: '请填写名称和指令');
-                              return;
-                            }
                             setSheetState(() => submitting = true);
-                            try {
-                              if (editing == null) {
-                                await api<ApiService>(
-                                  (r) => r.createAgent(
-                                    name: name,
-                                    instruction: instruction,
-                                    description: descCtrl.text.trim(),
-                                  ),
-                                );
-                              } else {
-                                await api<ApiService>(
-                                  (r) => r.updateAgent(
-                                    editing.id!,
-                                    name: name,
-                                    instruction: instruction,
-                                    description: descCtrl.text.trim(),
-                                  ),
-                                );
-                              }
-                              if (ctx.mounted) Navigator.pop(ctx);
-                              await _refresh();
-                            } on ApiException catch (e) {
-                              showToastSorry(description: e.message);
-                            } catch (e) {
-                              showToastSorry(description: e.toString());
-                            } finally {
-                              setSheetState(() => submitting = false);
-                            }
+                            final ok = await controller.saveAgent(
+                              editing: editing,
+                              name: nameCtrl.text,
+                              instruction: instrCtrl.text,
+                              description: descCtrl.text,
+                            );
+                            if (ok && ctx.mounted) Navigator.pop(ctx);
+                            setSheetState(() => submitting = false);
                           },
                     child: Text(submitting ? '提交中…' : '保存'),
                   ),
@@ -168,20 +121,15 @@ class _AgentsPageState extends NyPage<AgentsPage> {
         ],
       ),
     );
-    if (ok != true || agent.id == null) return;
-    try {
-      await api<ApiService>((r) => r.deleteAgent(agent.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
+    if (ok != true) return;
+    await controller.deleteAgent(agent);
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final c = controller;
+    final filtered = c.filtered;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -190,7 +138,7 @@ class _AgentsPageState extends NyPage<AgentsPage> {
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
-          if (_tab == 'user')
+          if (c.tab == 'user')
             TextButton(
               onPressed: () => _openForm(),
               child: const Text('新建'),
@@ -207,30 +155,30 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                 ButtonSegment(value: 'system', label: Text('系统')),
                 ButtonSegment(value: 'user', label: Text('用户')),
               ],
-              selected: {_tab},
-              onSelectionChanged: (v) => setState(() => _tab = v.first),
+              selected: {c.tab},
+              onSelectionChanged: (v) => c.setTab(v.first),
             ),
           ),
           const SizedBox(height: AppSpacing.x3),
           Expanded(
-            child: _loading
+            child: c.loading
                 ? const Center(child: CircularProgressIndicator())
-                : _filtered.isEmpty
+                : filtered.isEmpty
                     ? Center(
                         child: Text(
-                          _tab == 'system' ? '暂无系统智能体' : '暂无用户智能体',
+                          c.tab == 'system' ? '暂无系统智能体' : '暂无用户智能体',
                           style: TextStyle(color: palette.mutedForeground),
                         ),
                       )
                     : RefreshIndicator(
-                        onRefresh: _refresh,
+                        onRefresh: c.refresh,
                         child: ListView.separated(
                           padding: const EdgeInsets.all(AppSpacing.x4),
-                          itemCount: _filtered.length,
+                          itemCount: filtered.length,
                           separatorBuilder: (_, _) =>
                               const SizedBox(height: AppSpacing.x3),
                           itemBuilder: (context, index) {
-                            final agent = _filtered[index];
+                            final agent = filtered[index];
                             return Material(
                               color: palette.secondary,
                               borderRadius: AppRadius.x2lAll,
@@ -300,18 +248,11 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                                           children: [
                                             TextButton(
                                               onPressed: () async {
-                                                try {
-                                                  final full =
-                                                      await api<ApiService>(
-                                                    (r) =>
-                                                        r.getAgent(agent.id!),
-                                                  );
+                                                final full = await controller
+                                                    .fetchAgent(agent.id!);
+                                                if (full != null) {
                                                   await _openForm(
                                                     editing: full,
-                                                  );
-                                                } on ApiException catch (e) {
-                                                  showToastSorry(
-                                                    description: e.message,
                                                   );
                                                 }
                                               },

@@ -1,6 +1,5 @@
+import 'package:caibao/app/controllers/llm_models_controller.dart';
 import 'package:caibao/app/models/llm_model.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
@@ -8,54 +7,22 @@ import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class LlmModelsPage extends NyStatefulWidget {
+class LlmModelsPage extends NyStatefulWidget<LlmModelsController> {
   static RouteView path = ('/llm-models', (_) => LlmModelsPage());
 
   LlmModelsPage({super.key}) : super(child: () => _LlmModelsPageState());
 }
 
 class _LlmModelsPageState extends NyPage<LlmModelsPage> {
-  List<LlmModel> _items = [];
-  bool _loading = true;
-
-  static const List<String> _categories = [
-    'text',
-    'vision',
-    'multimodal',
-    'embedding',
-    'rerank',
-    'image',
-    'asr',
-    'tts',
-    'audio',
-    'video',
-    'code',
-    'moderation',
-    'reasoning',
-  ];
+  LlmModelsController get controller => widget.controller;
 
   @override
   get init => () async {
-        await _refresh();
+        await controller.refresh();
       };
 
   @override
   bool get stateManaged => false;
-
-  Future<void> _refresh() async {
-    setState(() => _loading = true);
-    try {
-      final items = await api<ApiService>((r) => r.listLlmModels());
-      if (!mounted) return;
-      setState(() => _items = items ?? []);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
 
   Future<void> _openForm({LlmModel? editing}) async {
     final name = TextEditingController(text: editing?.name ?? '');
@@ -63,7 +30,9 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
     final baseUrl = TextEditingController(text: editing?.baseUrl ?? '');
     final apiKey = TextEditingController();
     var category = editing?.category ?? 'multimodal';
-    if (!_categories.contains(category)) category = 'multimodal';
+    if (!LlmModelsController.categories.contains(category)) {
+      category = 'multimodal';
+    }
     var submitting = false;
     final palette = context.palette;
 
@@ -107,14 +76,15 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                     TextField(
                       controller: apiKey,
                       decoration: InputDecoration(
-                        labelText: editing == null ? 'API Key' : 'API Key（留空不改）',
+                        labelText:
+                            editing == null ? 'API Key' : 'API Key（留空不改）',
                       ),
                       obscureText: true,
                     ),
                     DropdownButtonFormField<String>(
                       initialValue: category,
                       decoration: const InputDecoration(labelText: '分类'),
-                      items: _categories
+                      items: LlmModelsController.categories
                           .map(
                             (c) => DropdownMenuItem(value: c, child: Text(c)),
                           )
@@ -136,34 +106,21 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                                 return;
                               }
                               setSheet(() => submitting = true);
-                              try {
-                                final body = <String, dynamic>{
-                                  'name': name.text.trim(),
-                                  'model': model.text.trim(),
-                                  'base_url': baseUrl.text.trim(),
-                                  'category': category,
-                                };
-                                if (apiKey.text.trim().isNotEmpty) {
-                                  body['api_key'] = apiKey.text.trim();
-                                }
-                                if (editing == null) {
-                                  await api<ApiService>(
-                                    (r) => r.createLlmModel(body),
-                                  );
-                                } else {
-                                  await api<ApiService>(
-                                    (r) => r.updateLlmModel(editing.id!, body),
-                                  );
-                                }
-                                if (ctx.mounted) Navigator.pop(ctx);
-                                await _refresh();
-                              } on ApiException catch (e) {
-                                showToastSorry(description: e.message);
-                              } catch (e) {
-                                showToastSorry(description: e.toString());
-                              } finally {
-                                setSheet(() => submitting = false);
+                              final body = <String, dynamic>{
+                                'name': name.text.trim(),
+                                'model': model.text.trim(),
+                                'base_url': baseUrl.text.trim(),
+                                'category': category,
+                              };
+                              if (apiKey.text.trim().isNotEmpty) {
+                                body['api_key'] = apiKey.text.trim();
                               }
+                              final ok = await controller.saveModel(
+                                editing: editing,
+                                body: body,
+                              );
+                              if (ok && ctx.mounted) Navigator.pop(ctx);
+                              setSheet(() => submitting = false);
                             },
                       child: Text(submitting ? '提交中…' : '保存'),
                     ),
@@ -180,18 +137,6 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
     model.dispose();
     baseUrl.dispose();
     apiKey.dispose();
-  }
-
-  Future<void> _enable(LlmModel item) async {
-    if (item.id == null) return;
-    try {
-      await api<ApiService>((r) => r.enableLlmModel(item.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
   }
 
   Future<void> _delete(LlmModel item) async {
@@ -212,20 +157,14 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
         ],
       ),
     );
-    if (ok != true || item.id == null) return;
-    try {
-      await api<ApiService>((r) => r.deleteLlmModel(item.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
+    if (ok != true) return;
+    await controller.deleteModel(item);
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final c = controller;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -237,9 +176,9 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
           TextButton(onPressed: () => _openForm(), child: const Text('新建')),
         ],
       ),
-      body: _loading
+      body: c.loading
           ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
+          : c.items.isEmpty
               ? Center(
                   child: Text(
                     '暂无模型',
@@ -247,14 +186,14 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: _refresh,
+                  onRefresh: c.refresh,
                   child: ListView.separated(
                     padding: const EdgeInsets.all(AppSpacing.x4),
-                    itemCount: _items.length,
+                    itemCount: c.items.length,
                     separatorBuilder: (_, _) =>
                         const SizedBox(height: AppSpacing.x3),
                     itemBuilder: (context, index) {
-                      final item = _items[index];
+                      final item = c.items[index];
                       return Material(
                         color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
@@ -310,15 +249,16 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                                 children: [
                                   if (!item.enabled)
                                     TextButton(
-                                      onPressed: () => _enable(item),
+                                      onPressed: () => c.enable(item),
                                       child: const Text('启用'),
                                     ),
                                   TextButton(
                                     onPressed: () async {
-                                      final full = await api<ApiService>(
-                                        (r) => r.getLlmModel(item.id!),
-                                      );
-                                      await _openForm(editing: full);
+                                      final full =
+                                          await c.fetchModel(item.id!);
+                                      if (full != null) {
+                                        await _openForm(editing: full);
+                                      }
                                     },
                                     child: const Text('编辑'),
                                   ),

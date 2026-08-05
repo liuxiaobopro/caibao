@@ -1,83 +1,35 @@
+import 'package:caibao/app/controllers/drive_controller.dart';
 import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
+import 'package:caibao/app/utils/drive_file_helpers.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class DrivePage extends NyStatefulWidget {
+class DrivePage extends NyStatefulWidget<DriveController> {
   static RouteView path = ('/drive', (_) => DrivePage());
 
   DrivePage({super.key}) : super(child: () => _DrivePageState());
 }
 
 class _DrivePageState extends NyPage<DrivePage> {
-  List<DriveFile> _items = [];
-  bool _loading = true;
+  DriveController get controller => widget.controller;
 
   @override
   get init => () async {
-        await _refresh();
+        await controller.refresh();
       };
 
   @override
   bool get stateManaged => false;
 
-  Future<void> _refresh() async {
-    setState(() => _loading = true);
-    try {
-      final items = await api<ApiService>((r) => r.listFiles());
-      if (!mounted) return;
-      setState(() => _items = items ?? []);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  String _formatSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    }
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-  }
-
-  String _formatTime(DateTime? at) {
-    if (at == null) return '';
-    final local = at.toLocal();
-    return '${local.month}/${local.day} '
-        '${local.hour.toString().padLeft(2, '0')}:'
-        '${local.minute.toString().padLeft(2, '0')}';
-  }
-
-  String _resolveUrl(String? url) {
-    final raw = url?.trim() ?? '';
-    if (raw.isEmpty) return '';
-    if (raw.startsWith('http://') ||
-        raw.startsWith('https://') ||
-        raw.startsWith('blob:')) {
-      return raw;
-    }
-    return 'https://$raw';
-  }
-
   Future<void> _openFile(DriveFile file) async {
     if (file.id == null) return;
     try {
-      var url = _resolveUrl(file.url);
-      if (url.isEmpty) {
-        url = _resolveUrl(
-          await api<ApiService>((r) => r.getFileURL(file.id!)),
-        );
-      }
+      final url = await controller.resolveFileUrl(file);
       if (url.isEmpty) {
         throw ApiException('文件地址无效');
       }
@@ -116,11 +68,7 @@ class _DrivePageState extends NyPage<DrivePage> {
         return;
       }
 
-      final uri = Uri.parse(url);
-      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!ok) {
-        showToastSorry(description: '无法打开文件');
-      }
+      await controller.openExternal(url);
     } on ApiException catch (e) {
       showToastSorry(description: e.message);
     } catch (e) {
@@ -146,32 +94,14 @@ class _DrivePageState extends NyPage<DrivePage> {
         ],
       ),
     );
-    if (ok != true || file.id == null) return;
-    try {
-      await api<ApiService>((r) => r.deleteFile(file.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
-  }
-
-  IconData _iconFor(DriveFile file) {
-    if (file.isImage) return Icons.image_outlined;
-    final name = file.name ?? '';
-    if (RegExp(r'\.(xlsx?|csv)$', caseSensitive: false).hasMatch(name)) {
-      return Icons.table_chart_outlined;
-    }
-    if (RegExp(r'\.(pdf|docx?|txt|md)$', caseSensitive: false).hasMatch(name)) {
-      return Icons.description_outlined;
-    }
-    return Icons.insert_drive_file_outlined;
+    if (ok != true) return;
+    await controller.deleteFile(file);
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final c = controller;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -180,9 +110,9 @@ class _DrivePageState extends NyPage<DrivePage> {
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
       ),
-      body: _loading
+      body: c.loading
           ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
+          : c.items.isEmpty
               ? Center(
                   child: Text(
                     '暂无文件',
@@ -190,14 +120,14 @@ class _DrivePageState extends NyPage<DrivePage> {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: _refresh,
+                  onRefresh: c.refresh,
                   child: ListView.separated(
                     padding: const EdgeInsets.all(AppSpacing.x4),
-                    itemCount: _items.length,
+                    itemCount: c.items.length,
                     separatorBuilder: (_, _) =>
                         const SizedBox(height: AppSpacing.x2),
                     itemBuilder: (context, index) {
-                      final file = _items[index];
+                      final file = c.items[index];
                       return Material(
                         color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
@@ -209,7 +139,8 @@ class _DrivePageState extends NyPage<DrivePage> {
                             padding: const EdgeInsets.all(AppSpacing.x3),
                             child: Row(
                               children: [
-                                Icon(_iconFor(file), color: palette.foreground),
+                                Icon(c.iconFor(file),
+                                    color: palette.foreground),
                                 const SizedBox(width: AppSpacing.x3),
                                 Expanded(
                                   child: Column(
@@ -228,7 +159,7 @@ class _DrivePageState extends NyPage<DrivePage> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        '${_formatSize(file.size)} · ${_formatTime(file.createdAt)}'
+                                        '${formatDriveFileSize(file.size)} · ${formatDriveFileTime(file.createdAt)}'
                                         '${file.source != null ? ' · ${file.source}' : ''}',
                                         style: TextStyle(
                                           fontSize: AppTypography.xs,

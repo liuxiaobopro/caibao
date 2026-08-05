@@ -1,32 +1,28 @@
-import 'package:caibao/app/analytics/analytics.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
+import 'package:caibao/app/controllers/login_controller.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/pages/chat_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class LoginPage extends NyStatefulWidget {
+class LoginPage extends NyStatefulWidget<LoginController> {
   static RouteView path = ('/login', (_) => LoginPage());
 
   LoginPage({super.key}) : super(child: () => _LoginPageState());
 }
 
 class _LoginPageState extends NyPage<LoginPage> {
+  LoginController get controller => widget.controller;
+
   final TextEditingController _usernameController =
       TextEditingController(text: 'app');
   final TextEditingController _passwordController =
       TextEditingController(text: 'app123');
-  bool _submitting = false;
 
   @override
   get init => () async {
-        if (await Auth.isAuthenticated()) {
-          await routeTo(ChatPage.path, navigationType: NavigationType.pushAndForgetAll);
-        }
+        await controller.redirectIfAuthenticated();
       };
 
   @override
@@ -40,52 +36,16 @@ class _LoginPageState extends NyPage<LoginPage> {
   }
 
   Future<void> _submit() async {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text;
-    if (username.isEmpty || password.isEmpty) {
-      showToastSorry(description: '请输入用户名和密码');
-      return;
-    }
-
-    setState(() => _submitting = true);
-    try {
-      final loginResp = await api<ApiService>(
-        (request) => request.login(username, password),
-      );
-      final token = loginResp?['token']?.toString();
-      if (token == null || token.isEmpty) {
-        throw ApiException('登录失败');
-      }
-
-      await Auth.authenticate(data: {'token': token});
-      final me = await api<ApiService>((request) => request.fetchMe());
-      await Auth.authenticate(
-        data: {
-          'token': token,
-          'id': me?.id,
-          'username': me?.username,
-          'email': me?.email,
-          'nickname': me?.nickname,
-          'avatar_url': me?.avatarUrl,
-        },
-      );
-
-      Analytics.instance.track('login', page: '/login');
-      await Analytics.instance.flush();
-
-      await routeTo(ChatPage.path, navigationType: NavigationType.pushAndForgetAll);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    await controller.submit(
+      username: _usernameController.text,
+      password: _passwordController.text,
+    );
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final submitting = controller.submitting;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -140,7 +100,7 @@ class _LoginPageState extends NyPage<LoginPage> {
               SizedBox(
                 height: 48,
                 child: FilledButton(
-                  onPressed: _submitting ? null : _submit,
+                  onPressed: submitting ? null : _submit,
                   style: FilledButton.styleFrom(
                     backgroundColor: palette.brand,
                     foregroundColor: palette.brandOn,
@@ -148,7 +108,7 @@ class _LoginPageState extends NyPage<LoginPage> {
                       borderRadius: AppRadius.x2lAll,
                     ),
                   ),
-                  child: _submitting
+                  child: submitting
                       ? const SizedBox(
                           width: 20,
                           height: 20,

@@ -1,9 +1,5 @@
-import 'package:caibao/app/models/chat_conversation.dart';
+import 'package:caibao/app/controllers/chat_controller.dart';
 import 'package:caibao/app/models/chat_message.dart';
-import 'package:caibao/app/models/user.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
-import 'package:caibao/app/networking/chat_stream_client.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
@@ -15,33 +11,27 @@ import 'package:caibao/resources/widgets/chat/chat_quick_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class ChatPage extends NyStatefulWidget {
+class ChatPage extends NyStatefulWidget<ChatController> {
   static RouteView path = ('/chat', (_) => ChatPage());
 
   ChatPage({super.key}) : super(child: () => _ChatPageState());
 }
 
 class _ChatPageState extends NyPage<ChatPage> {
+  ChatController get controller => widget.controller;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _composerController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final ChatStreamClient _streamClient = ChatStreamClient();
-
-  String _title = '菜包';
-  String? _activeConversationId;
-  List<ChatConversation> _conversations = [];
-  List<ChatMessage> _messages = [];
-  User? _user;
-  bool _loadingConversations = false;
-  bool _loadingMessages = false;
-  bool _sending = false;
   bool _showScrollToBottom = false;
 
   @override
   get init => () async {
         _scrollController.addListener(_onScroll);
-        await _loadUser();
-        await _loadConversations();
+        controller.onScrollToBottom = _scrollToBottom;
+        controller.onClearComposer = _composerController.clear;
+        await controller.loadUser();
+        await controller.loadConversations();
       };
 
   @override
@@ -64,56 +54,6 @@ class _ChatPageState extends NyPage<ChatPage> {
     }
   }
 
-  Future<void> _loadUser() async {
-    try {
-      final me = await api<ApiService>((request) => request.fetchMe());
-      if (!mounted) return;
-      setState(() => _user = me);
-    } catch (_) {
-      final auth = Auth.data();
-      if (auth is Map && mounted) {
-        setState(() => _user = User.fromJson(auth));
-      }
-    }
-  }
-
-  Future<void> _loadConversations() async {
-    setState(() => _loadingConversations = true);
-    try {
-      final result = await api<ApiService>(
-        (request) => request.listConversations(),
-      );
-      if (!mounted) return;
-      setState(() {
-        _conversations = result?.items ?? [];
-      });
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loadingConversations = false);
-    }
-  }
-
-  Future<void> _loadMessages(String conversationId) async {
-    setState(() => _loadingMessages = true);
-    try {
-      final items = await api<ApiService>(
-        (request) => request.listMessages(conversationId),
-      );
-      if (!mounted) return;
-      setState(() => _messages = items ?? []);
-      _scrollToBottom();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loadingMessages = false);
-    }
-  }
-
   void _openDrawer() {
     _scaffoldKey.currentState?.openDrawer();
   }
@@ -124,138 +64,6 @@ class _ChatPageState extends NyPage<ChatPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _scaffoldKey.currentState?.openDrawer();
     });
-  }
-
-  void _onNewChat() {
-    setState(() {
-      _title = '菜包';
-      _activeConversationId = null;
-      _messages = [];
-      _composerController.clear();
-    });
-  }
-
-  Future<void> _onSelectConversation(ChatConversation conversation) async {
-    setState(() {
-      _title = conversation.title?.isNotEmpty == true
-          ? conversation.title!
-          : '菜包';
-      _activeConversationId = conversation.id;
-      _messages = [];
-    });
-    if (conversation.id != null) {
-      await _loadMessages(conversation.id!);
-    }
-  }
-
-  Future<void> _onDeleteConversation(ChatConversation conversation) async {
-    final id = conversation.id;
-    if (id == null) return;
-    try {
-      await api<ApiService>((request) => request.deleteConversation(id));
-      if (!mounted) return;
-      setState(() {
-        _conversations =
-            _conversations.where((item) => item.id != id).toList();
-        if (_activeConversationId == id) {
-          _onNewChat();
-        }
-      });
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
-  }
-
-  Future<void> _onSubmit(String text) async {
-    final content = text.trim();
-    if (content.isEmpty || _sending) return;
-
-    setState(() => _sending = true);
-    _composerController.clear();
-
-    var conversationId = _activeConversationId;
-    try {
-      if (conversationId == null) {
-        final title =
-            content.length > 64 ? '${content.substring(0, 64)}...' : content;
-        conversationId = await api<ApiService>(
-          (request) => request.createConversation(title: title),
-        );
-        if (conversationId == null || conversationId.isEmpty) {
-          throw ApiException('创建会话失败');
-        }
-        setState(() {
-          _activeConversationId = conversationId;
-          _title = content;
-        });
-      }
-
-      setState(() {
-        _messages = [
-          ..._messages,
-          ChatMessage(
-            role: ChatMessageRole.user,
-            content: content,
-            createdAt: DateTime.now(),
-          ),
-          ChatMessage(
-            role: ChatMessageRole.assistant,
-            content: '',
-            createdAt: DateTime.now(),
-            status: 'streaming',
-          ),
-        ];
-      });
-      _scrollToBottom();
-
-      await _streamClient.streamConversationChat(
-        conversationId: conversationId,
-        content: content,
-        onEvent: (event) {
-          if (!mounted) return;
-          if (event.type == 'delta' && event.content != null) {
-            setState(() {
-              if (_messages.isEmpty) return;
-              final last = _messages.last;
-              if (last.role != ChatMessageRole.assistant) return;
-              _messages[_messages.length - 1] = ChatMessage(
-                id: event.messageId ?? last.id,
-                role: ChatMessageRole.assistant,
-                content: '${last.content ?? ''}${event.content}',
-                createdAt: last.createdAt,
-                status: 'streaming',
-              );
-            });
-            _scrollToBottom();
-          } else if (event.type == 'done') {
-            setState(() {
-              if (_messages.isEmpty) return;
-              final last = _messages.last;
-              if (last.role != ChatMessageRole.assistant) return;
-              _messages[_messages.length - 1] = ChatMessage(
-                id: event.messageId ?? last.id,
-                role: ChatMessageRole.assistant,
-                content: event.content ?? last.content,
-                createdAt: last.createdAt,
-                status: 'done',
-              );
-            });
-          } else if (event.type == 'error') {
-            showToastSorry(description: event.msg ?? '生成失败');
-          }
-        },
-      );
-
-      await _loadConversations();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _sending = false);
-    }
   }
 
   void _scrollToBottom() {
@@ -272,24 +80,25 @@ class _ChatPageState extends NyPage<ChatPage> {
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final c = controller;
 
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: palette.background,
       drawer: ChatHistoryDrawer(
-        user: _user,
-        conversations: _conversations,
-        activeConversationId: _activeConversationId,
-        loading: _loadingConversations,
-        onNewChat: _onNewChat,
-        onSelectConversation: _onSelectConversation,
-        onDeleteConversation: _onDeleteConversation,
-        onRefresh: _loadConversations,
+        user: c.user,
+        conversations: c.conversations,
+        activeConversationId: c.activeConversationId,
+        loading: c.loadingConversations,
+        onNewChat: c.newChat,
+        onSelectConversation: c.selectConversation,
+        onDeleteConversation: c.deleteConversation,
+        onRefresh: c.loadConversations,
         onNavigate: _navigateFromDrawer,
       ),
       appBar: ChatAppBar(
         onMenuTap: _openDrawer,
-        title: _title,
+        title: c.title,
       ),
       body: SafeArea(
         child: Column(
@@ -297,22 +106,22 @@ class _ChatPageState extends NyPage<ChatPage> {
             Expanded(
               child: Stack(
                 children: [
-                  _loadingMessages
+                  c.loadingMessages
                       ? const Center(child: CircularProgressIndicator())
-                      : _messages.isEmpty
+                      : c.messages.isEmpty
                           ? Center(
                               child: Text(
-                                _activeConversationId == null
+                                c.activeConversationId == null
                                     ? '有什么我能帮你的吗？'
                                     : '暂无消息',
                                 style: TextStyle(
-                                  color: _activeConversationId == null
+                                  color: c.activeConversationId == null
                                       ? palette.foreground
                                       : palette.mutedForeground,
-                                  fontSize: _activeConversationId == null
+                                  fontSize: c.activeConversationId == null
                                       ? AppTypography.x3l
                                       : AppTypography.base,
-                                  fontWeight: _activeConversationId == null
+                                  fontWeight: c.activeConversationId == null
                                       ? FontWeight.w600
                                       : FontWeight.w400,
                                   letterSpacing: -0.3,
@@ -328,9 +137,9 @@ class _ChatPageState extends NyPage<ChatPage> {
                                 AppSpacing.x4,
                                 AppSpacing.x5,
                               ),
-                              itemCount: _messages.length,
+                              itemCount: c.messages.length,
                               itemBuilder: (context, index) {
-                                final message = _messages[index];
+                                final message = c.messages[index];
                                 final isUser =
                                     message.role == ChatMessageRole.user;
                                 final content =
@@ -445,7 +254,7 @@ class _ChatPageState extends NyPage<ChatPage> {
             ),
             ChatComposer(
               controller: _composerController,
-              onSubmit: _sending ? null : _onSubmit,
+              onSubmit: c.sending ? null : c.submit,
             ),
           ],
         ),

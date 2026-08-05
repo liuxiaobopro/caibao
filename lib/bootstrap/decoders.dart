@@ -1,4 +1,14 @@
+import 'package:caibao/app/controllers/agent_chat_controller.dart';
+import 'package:caibao/app/controllers/agents_controller.dart';
+import 'package:caibao/app/controllers/app_detail_controller.dart';
+import 'package:caibao/app/controllers/apps_controller.dart';
+import 'package:caibao/app/controllers/chat_controller.dart';
+import 'package:caibao/app/controllers/drive_controller.dart';
 import 'package:caibao/app/controllers/home_controller.dart';
+import 'package:caibao/app/controllers/llm_models_controller.dart';
+import 'package:caibao/app/controllers/login_controller.dart';
+import 'package:caibao/app/controllers/profile_controller.dart';
+import 'package:caibao/app/controllers/storage_configs_controller.dart';
 import 'package:caibao/app/models/agent.dart';
 import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/chat_message.dart';
@@ -60,4 +70,14 @@ final Map<Type, dynamic> apiDecoders = {
 
 final Map<Type, dynamic> controllers = {
   HomeController: () => HomeController(),
+  LoginController: () => LoginController(),
+  ChatController: () => ChatController(),
+  AgentChatController: () => AgentChatController(),
+  AgentsController: () => AgentsController(),
+  ProfileController: () => ProfileController(),
+  DriveController: () => DriveController(),
+  StorageConfigsController: () => StorageConfigsController(),
+  LlmModelsController: () => LlmModelsController(),
+  AppsController: () => AppsController(),
+  AppDetailController: () => AppDetailController(),
 };

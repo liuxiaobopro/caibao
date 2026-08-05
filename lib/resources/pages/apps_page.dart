@@ -1,36 +1,27 @@
-import 'package:caibao/app/apps/registry.dart';
+import 'package:caibao/app/controllers/apps_controller.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/pages/app_detail_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class AppsPage extends NyStatefulWidget {
+class AppsPage extends NyStatefulWidget<AppsController> {
   static RouteView path = ('/apps', (_) => AppsPage());
 
   AppsPage({super.key}) : super(child: () => _AppsPageState());
 }
 
 class _AppsPageState extends NyPage<AppsPage> {
+  AppsController get controller => widget.controller;
+
   @override
   bool get stateManaged => false;
-
-  void _openApp(AppMeta app) {
-    routeTo(
-      AppDetailPage.path,
-      data: {
-        'slug': app.slug,
-        'name': app.name,
-        'description': app.description,
-      },
-    );
-  }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final apps = controller.apps;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -39,7 +30,7 @@ class _AppsPageState extends NyPage<AppsPage> {
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
       ),
-      body: appList.isEmpty
+      body: apps.isEmpty
           ? Center(
               child: Text(
                 '暂无应用',
@@ -48,17 +39,17 @@ class _AppsPageState extends NyPage<AppsPage> {
             )
           : ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.x4),
-              itemCount: appList.length,
+              itemCount: apps.length,
               separatorBuilder: (_, _) =>
                   const SizedBox(height: AppSpacing.x3),
               itemBuilder: (context, index) {
-                final app = appList[index];
+                final app = apps[index];
                 return Material(
                   color: palette.secondary,
                   borderRadius: AppRadius.x2lAll,
                   child: InkWell(
                     borderRadius: AppRadius.x2lAll,
-                    onTap: () => _openApp(app),
+                    onTap: () => controller.openApp(app),
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.x4),
                       child: Row(

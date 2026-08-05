@@ -1,6 +1,5 @@
+import 'package:caibao/app/controllers/storage_configs_controller.dart';
 import 'package:caibao/app/models/storage_config.dart';
-import 'package:caibao/app/networking/api_exception.dart';
-import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
@@ -8,7 +7,7 @@ import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class StorageConfigsPage extends NyStatefulWidget {
+class StorageConfigsPage extends NyStatefulWidget<StorageConfigsController> {
   static RouteView path = ('/storage-configs', (_) => StorageConfigsPage());
 
   StorageConfigsPage({super.key})
@@ -16,31 +15,15 @@ class StorageConfigsPage extends NyStatefulWidget {
 }
 
 class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
-  List<S3StorageConfig> _items = [];
-  bool _loading = true;
+  StorageConfigsController get controller => widget.controller;
 
   @override
   get init => () async {
-        await _refresh();
+        await controller.refresh();
       };
 
   @override
   bool get stateManaged => false;
-
-  Future<void> _refresh() async {
-    setState(() => _loading = true);
-    try {
-      final items = await api<ApiService>((r) => r.listStorageConfigs());
-      if (!mounted) return;
-      setState(() => _items = items ?? []);
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
 
   Future<void> _openForm({S3StorageConfig? editing}) async {
     final name = TextEditingController(text: editing?.name ?? '');
@@ -130,41 +113,25 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
                                 return;
                               }
                               setSheet(() => submitting = true);
-                              try {
-                                final body = <String, dynamic>{
-                                  'name': name.text.trim(),
-                                  'endpoint': endpoint.text.trim(),
-                                  'region': region.text.trim(),
-                                  'bucket': bucket.text.trim(),
-                                  'access_key_id': accessKey.text.trim(),
-                                  'domain': domain.text.trim(),
-                                  'force_path_style': forcePathStyle,
-                                };
-                                if (secretKey.text.trim().isNotEmpty) {
-                                  body['secret_access_key'] =
-                                      secretKey.text.trim();
-                                }
-                                if (editing == null) {
-                                  await api<ApiService>(
-                                    (r) => r.createStorageConfig(body),
-                                  );
-                                } else {
-                                  await api<ApiService>(
-                                    (r) => r.updateStorageConfig(
-                                      editing.id!,
-                                      body,
-                                    ),
-                                  );
-                                }
-                                if (ctx.mounted) Navigator.pop(ctx);
-                                await _refresh();
-                              } on ApiException catch (e) {
-                                showToastSorry(description: e.message);
-                              } catch (e) {
-                                showToastSorry(description: e.toString());
-                              } finally {
-                                setSheet(() => submitting = false);
+                              final body = <String, dynamic>{
+                                'name': name.text.trim(),
+                                'endpoint': endpoint.text.trim(),
+                                'region': region.text.trim(),
+                                'bucket': bucket.text.trim(),
+                                'access_key_id': accessKey.text.trim(),
+                                'domain': domain.text.trim(),
+                                'force_path_style': forcePathStyle,
+                              };
+                              if (secretKey.text.trim().isNotEmpty) {
+                                body['secret_access_key'] =
+                                    secretKey.text.trim();
                               }
+                              final ok = await controller.saveConfig(
+                                editing: editing,
+                                body: body,
+                              );
+                              if (ok && ctx.mounted) Navigator.pop(ctx);
+                              setSheet(() => submitting = false);
                             },
                       child: Text(submitting ? '提交中…' : '保存'),
                     ),
@@ -186,18 +153,6 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
     domain.dispose();
   }
 
-  Future<void> _enable(S3StorageConfig item) async {
-    if (item.id == null) return;
-    try {
-      await api<ApiService>((r) => r.enableStorageConfig(item.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
-  }
-
   Future<void> _delete(S3StorageConfig item) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -216,20 +171,14 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
         ],
       ),
     );
-    if (ok != true || item.id == null) return;
-    try {
-      await api<ApiService>((r) => r.deleteStorageConfig(item.id!));
-      await _refresh();
-    } on ApiException catch (e) {
-      showToastSorry(description: e.message);
-    } catch (e) {
-      showToastSorry(description: e.toString());
-    }
+    if (ok != true) return;
+    await controller.deleteConfig(item);
   }
 
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
+    final c = controller;
 
     return Scaffold(
       backgroundColor: palette.background,
@@ -241,9 +190,9 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
           TextButton(onPressed: () => _openForm(), child: const Text('新建')),
         ],
       ),
-      body: _loading
+      body: c.loading
           ? const Center(child: CircularProgressIndicator())
-          : _items.isEmpty
+          : c.items.isEmpty
               ? Center(
                   child: Text(
                     '暂无存储配置',
@@ -251,14 +200,14 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: _refresh,
+                  onRefresh: c.refresh,
                   child: ListView.separated(
                     padding: const EdgeInsets.all(AppSpacing.x4),
-                    itemCount: _items.length,
+                    itemCount: c.items.length,
                     separatorBuilder: (_, _) =>
                         const SizedBox(height: AppSpacing.x3),
                     itemBuilder: (context, index) {
-                      final item = _items[index];
+                      final item = c.items[index];
                       return Material(
                         color: palette.secondary,
                         borderRadius: AppRadius.x2lAll,
@@ -312,15 +261,16 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
                                 children: [
                                   if (!item.enabled)
                                     TextButton(
-                                      onPressed: () => _enable(item),
+                                      onPressed: () => c.enable(item),
                                       child: const Text('启用'),
                                     ),
                                   TextButton(
                                     onPressed: () async {
-                                      final full = await api<ApiService>(
-                                        (r) => r.getStorageConfig(item.id!),
-                                      );
-                                      await _openForm(editing: full);
+                                      final full =
+                                          await c.fetchConfig(item.id!);
+                                      if (full != null) {
+                                        await _openForm(editing: full);
+                                      }
                                     },
                                     child: const Text('编辑'),
                                   ),

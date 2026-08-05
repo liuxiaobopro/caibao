@@ -1,4 +1,4 @@
-import 'package:caibao/app/apps/registry.dart';
+import 'package:caibao/app/controllers/app_detail_controller.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
@@ -7,30 +7,18 @@ import 'package:caibao/resources/themes/tokens/caibao_palette.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class AppDetailPage extends NyStatefulWidget {
+class AppDetailPage extends NyStatefulWidget<AppDetailController> {
   static RouteView path = ('/apps/detail', (_) => AppDetailPage());
 
   AppDetailPage({super.key}) : super(child: () => _AppDetailPageState());
 }
 
 class _AppDetailPageState extends NyPage<AppDetailPage> {
-  String _slug = '';
-  String _name = '';
-  String _description = '';
+  AppDetailController get controller => widget.controller;
 
   @override
   get init => () async {
-        final arg = data();
-        if (arg is Map) {
-          _slug = arg['slug']?.toString() ?? '';
-          _name = arg['name']?.toString() ?? '';
-          _description = arg['description']?.toString() ?? '';
-        }
-        final meta = getAppMeta(_slug);
-        if (meta != null) {
-          _name = meta.name;
-          _description = meta.description;
-        }
+        controller.bootstrap(data());
       };
 
   @override
@@ -39,12 +27,12 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
-    final builder = getAppComponent(_slug);
+    final builder = controller.componentBuilder;
 
     return Scaffold(
       backgroundColor: palette.background,
       appBar: AppBar(
-        title: Text(_name.isEmpty ? '应用' : _name),
+        title: Text(controller.name.isEmpty ? '应用' : controller.name),
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
       ),
@@ -76,7 +64,7 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
           ),
           const SizedBox(height: AppSpacing.x4),
           Text(
-            _name,
+            controller.name,
             style: TextStyle(
               fontSize: AppTypography.x2l,
               fontWeight: FontWeight.w700,
@@ -85,7 +73,9 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
           ),
           const SizedBox(height: AppSpacing.x2),
           Text(
-            _description.isNotEmpty ? _description : '暂无描述',
+            controller.description.isNotEmpty
+                ? controller.description
+                : '暂无描述',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: AppTypography.base,
