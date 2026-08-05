@@ -40,5 +40,5 @@ final Map<String, WidgetBuilder> appComponents = {
 
 ## 注意
 
-- `/apps/todos`（`todos_app_page.dart`）为遗留独立路由，**未**挂在 `router.dart`；正式入口是 `/apps` → `/apps/detail`
+- 正式入口：`/apps` → `/apps/detail`（按 `slug` 渲染）
 - Adapter 内继续用 `api<ApiService>`，保持鉴权与信封一致

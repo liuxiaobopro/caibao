@@ -5,6 +5,7 @@ import 'package:caibao/app/analytics/analytics_route_observer.dart';
 import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/config/localization.dart';
 import 'package:caibao/resources/widgets/loader_widget.dart';
+import 'package:caibao_theme/caibao_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -76,14 +77,17 @@ class _MainState extends NyPage<Main> {
   @override
   LoadingStyle get loadingStyle => LoadingStyle.normal(
         child: MaterialApp(
-          color: Colors.white,
+          color: CaibaoPalette.light.card,
           debugShowMaterialGrid: true,
           showPerformanceOverlay: false,
           checkerboardRasterCacheImages: false,
           checkerboardOffscreenLayers: false,
           showSemanticsDebugger: false,
           debugShowCheckedModeBanner: true,
-          home: Scaffold(backgroundColor: Colors.white, body: Loader()),
+          home: Scaffold(
+            backgroundColor: CaibaoPalette.light.card,
+            body: Loader(),
+          ),
         ),
       );
 

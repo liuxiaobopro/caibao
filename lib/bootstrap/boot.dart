@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:caibao/config/app.dart';
 import 'package:caibao/resources/widgets/splash_screen.dart';
-import '../resources/widgets/main_widget.dart';
 import 'package:caibao/bootstrap/providers.dart';
+import 'package:caibao/resources/widgets/main_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bugly/flutter_bugly.dart';

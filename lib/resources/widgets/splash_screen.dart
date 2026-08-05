@@ -1,7 +1,9 @@
+import 'dart:math';
+
+import 'package:caibao/resources/widgets/logo_widget.dart';
+import 'package:caibao_theme/caibao_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:caibao/resources/widgets/logo_widget.dart';
-import 'dart:math';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -18,11 +20,15 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: CaibaoPalette.light.card,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[Logo(), Spacing.vertical(50), AnimatedLoader()],
+            children: <Widget>[
+              Logo(),
+              Spacing.vertical(50),
+              const AnimatedLoader(),
+            ],
           ),
         ),
       ),
@@ -37,7 +43,7 @@ class AnimatedLoader extends StatefulWidget {
   const AnimatedLoader({
     super.key,
     this.size = 50.0,
-    this.color = Colors.blue,
+    this.color = CaibaoPalette.brandHex,
   });
 
   @override
@@ -108,13 +114,13 @@ class _AnimatedLoaderState extends State<AnimatedLoader>
           final double angle = (index / 8) * 2 * pi;
           final double offset = widget.size * 0.35;
           return Transform(
-              transform: Matrix4.identity()
-                ..translateByDouble(
-                  offset * cos(angle),
-                  offset * sin(angle),
-                  0,
-                  1.0,
-                ),
+            transform: Matrix4.identity()
+              ..translateByDouble(
+                offset * cos(angle),
+                offset * sin(angle),
+                0,
+                1.0,
+              ),
             child: _buildDot(index),
           );
         }),

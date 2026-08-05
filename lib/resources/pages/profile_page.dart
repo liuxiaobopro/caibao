@@ -3,6 +3,7 @@ import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/llm_models_page.dart';
 import 'package:caibao/resources/pages/storage_configs_page.dart';
+import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -131,13 +132,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                           color: palette.muted,
                           width: 1,
                         ),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x14000000),
-                            blurRadius: 12,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
+                        boxShadow: AppShadows.avatar,
                       ),
                       child: CircleAvatar(
                         radius: 48,
@@ -221,19 +216,19 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                     _MenuTile(
                       label: 'S3 存储设置',
                       icon: Icons.cloud_outlined,
-                      iconBg: const Color(0xFF3B82F6),
+                      iconBg: palette.info,
                       onTap: () => routeTo(StorageConfigsPage.path),
                     ),
                     _MenuTile(
                       label: '模型配置',
                       icon: Icons.auto_awesome,
-                      iconBg: const Color(0xFF8B5CF6),
+                      iconBg: palette.violet,
                       onTap: () => routeTo(LlmModelsPage.path),
                     ),
                     _MenuTile(
                       label: '主题',
                       icon: Icons.palette_outlined,
-                      iconBg: const Color(0xFF10B981),
+                      iconBg: palette.success,
                       trailingText: controller.themeLabel,
                       onTap: _openThemeSheet,
                       showDivider: false,
@@ -341,7 +336,7 @@ class _MenuTile extends StatelessWidget {
                           child: Icon(
                             icon,
                             size: 18,
-                            color: Colors.white,
+                            color: palette.onAccentIcon,
                           ),
                         ),
                         const SizedBox(width: 12),

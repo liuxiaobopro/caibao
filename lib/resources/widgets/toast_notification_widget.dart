@@ -149,7 +149,7 @@ class _ToastNotificationBase extends StatelessWidget {
                 ? null
                 : <BoxShadow>[
                     BoxShadow(
-                      color: Colors.grey.withAlpha(25),
+                      color: context.palette.mutedForeground.withAlpha(25),
                       spreadRadius: 3,
                       blurRadius: 5,
                       offset: const Offset(0, 2),
@@ -199,9 +199,7 @@ class _ToastNotificationBase extends StatelessWidget {
                     icon: Icon(
                       Icons.close,
                       size: 18,
-                      color: context.isThemeDark
-                          ? Colors.white70
-                          : Colors.grey.shade600,
+                      color: context.palette.mutedForeground,
                     ),
                   ),
                 ),

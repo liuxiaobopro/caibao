@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:flutter/material.dart';
 
 class GradientButton extends StatefulAppButton {
   final List<Color>? gradientColors;
@@ -27,15 +28,15 @@ class GradientButton extends StatefulAppButton {
 
   @override
   Widget buildButton(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
+    final palette = context.palette;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     final List<Color> colors = gradientColors ??
         <Color>[
-          theme.colorScheme.primary,
-          theme.colorScheme.tertiary,
+          palette.brand,
+          palette.brandDark,
         ];
-    final Color fgColor = contentColor ?? Colors.white;
+    final Color fgColor = contentColor ?? palette.brandOn;
     final BorderRadius radius = BorderRadius.circular(14);
 
     return Container(

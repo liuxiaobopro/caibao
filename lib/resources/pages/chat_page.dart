@@ -2,6 +2,7 @@ import 'package:caibao/app/controllers/chat_controller.dart';
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/resources/widgets/chat/assistant_message_body.dart';
 import 'package:caibao/resources/widgets/chat/chat_app_bar.dart';
@@ -176,9 +177,9 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       ),
                                       child: Text(
                                         content,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
-                                          color: Colors.white,
+                                          color: palette.onUserBubble,
                                           fontWeight: FontWeight.w400,
                                           height: 1.45,
                                         ),
@@ -222,7 +223,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                         child: Material(
                           color: palette.card,
                           elevation: 1,
-                          shadowColor: const Color(0x33000000),
+                          shadowColor: AppShadows.elevatedColor,
                           shape: const CircleBorder(),
                           child: InkWell(
                             customBorder: const CircleBorder(),

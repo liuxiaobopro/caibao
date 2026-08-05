@@ -1,6 +1,7 @@
+import 'package:caibao/bootstrap/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:nylo_framework/theme/helper/ny_theme.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:nylo_framework/theme/helper/ny_theme.dart';
 
 class ThemeToggle extends StatelessWidget {
   const ThemeToggle({super.key});
@@ -8,6 +9,7 @@ class ThemeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isThemeDark = context.isThemeDark;
+    final palette = context.palette;
 
     if (context.isDeviceInDarkMode) {
       return Container(
@@ -30,10 +32,7 @@ class ThemeToggle extends StatelessWidget {
       children: <Widget>[
         Switch(
             trackOutlineColor: WidgetStateProperty.all(
-              NyColor(
-                light: Colors.grey,
-                dark: Colors.blue.shade50,
-              ).toColor(context),
+              isThemeDark ? palette.brandContainer : palette.mutedForeground,
             ),
             value: isThemeDark,
             onChanged: (bool value) {

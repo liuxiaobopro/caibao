@@ -427,8 +427,8 @@ class _ConversationTile extends StatelessWidget {
                   Container(
                     width: 7,
                     height: 7,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF006BFF),
+                    decoration: BoxDecoration(
+                      color: palette.userBubble,
                       shape: BoxShape.circle,
                     ),
                   ),

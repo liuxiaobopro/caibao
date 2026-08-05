@@ -22,6 +22,9 @@ class CaibaoPalette {
     required this.accent,
     required this.accentForeground,
     required this.danger,
+    required this.info,
+    required this.violet,
+    required this.success,
     required this.ring,
     required this.sidebar,
     required this.sidebarForeground,
@@ -51,6 +54,9 @@ class CaibaoPalette {
   final Color accent;
   final Color accentForeground;
   final Color danger;
+  final Color info;
+  final Color violet;
+  final Color success;
   final Color ring;
   final Color sidebar;
   final Color sidebarForeground;
@@ -64,10 +70,16 @@ class CaibaoPalette {
   Color get surface => card;
   Color get surfaceVariant => secondary;
   Color get outline => Colors.transparent;
+  Color get onUserBubble => brandOn;
+  Color get onAccentIcon => brandOn;
 
   static const Color brandHex = Color(0xFF1A9B7A);
   static const Color brandDarkHex = Color(0xFF147A5F);
   static const Color brandOnHex = Color(0xFFFFFFFF);
+  static const Color infoHex = Color(0xFF3B82F6);
+  static const Color violetHex = Color(0xFF8B5CF6);
+  static const Color successHex = Color(0xFF10B981);
+  static const Color userBubbleHex = Color(0xFF006BFF);
 
   static const CaibaoPalette light = CaibaoPalette(
     brand: brandHex,
@@ -88,10 +100,13 @@ class CaibaoPalette {
     accent: Color(0xFFF2F3F5),
     accentForeground: Color(0xFF1A1A1A),
     danger: Color(0xFFCC272E),
+    info: infoHex,
+    violet: violetHex,
+    success: successHex,
     ring: brandHex,
     sidebar: Color(0xFFFFFFFF),
     sidebarForeground: Color(0xFF1A1A1A),
-    userBubble: Color(0xFF006BFF),
+    userBubble: userBubbleHex,
     assistantBubble: Color(0xFFFFFFFF),
     code: Color(0xFFF0F2F5),
     codeHeader: Color(0xFFE5E8ED),
@@ -118,6 +133,9 @@ class CaibaoPalette {
     accent: Color(0xFF11241C),
     accentForeground: Color(0xFFC0E0D1),
     danger: Color(0xFFDB4241),
+    info: infoHex,
+    violet: violetHex,
+    success: successHex,
     ring: brandHex,
     sidebar: Color(0xFF090B0F),
     sidebarForeground: Color(0xFFE4E8EF),

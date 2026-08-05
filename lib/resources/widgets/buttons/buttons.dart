@@ -49,8 +49,6 @@ class Button {
       onFailure: onFailure,
       showToastError: showToastError,
       loadingStyle: LoadingStyle.skeletonizer(),
-      backgroundColor: Colors.lightGreen.shade800,
-      contentColor: Colors.white,
       width: width,
       height: _buttonHeight,
       animationStyle: ButtonAnimationStyle.clickable(),

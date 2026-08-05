@@ -11,9 +11,12 @@ abstract final class AppShadows {
     ),
   ];
 
+  static const Color softColor = Color(0x14000000);
+  static const Color elevatedColor = Color(0x33000000);
+
   static const List<BoxShadow> soft = <BoxShadow>[
     BoxShadow(
-      color: Color(0x14000000),
+      color: softColor,
       blurRadius: 16,
       offset: Offset(0, 4),
     ),
@@ -21,6 +24,14 @@ abstract final class AppShadows {
       color: Color(0x0A000000),
       blurRadius: 4,
       offset: Offset(0, 1),
+    ),
+  ];
+
+  static const List<BoxShadow> avatar = <BoxShadow>[
+    BoxShadow(
+      color: softColor,
+      blurRadius: 12,
+      offset: Offset(0, 4),
     ),
   ];
 

@@ -122,7 +122,7 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                     content,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: palette.brandOn,
+                                      color: palette.onUserBubble,
                                       fontWeight: FontWeight.w400,
                                       height: 1.45,
                                     ),

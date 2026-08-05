@@ -1,6 +1,8 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
+
+import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:flutter/material.dart';
 
 class TransparencyButton extends StatefulAppButton {
   final Color? contentColor;
@@ -24,14 +26,13 @@ class TransparencyButton extends StatefulAppButton {
 
   @override
   Widget buildButton(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
+    final palette = context.palette;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final Color fgColor = contentColor ??
-        (isDark ? Colors.white : theme.colorScheme.onSurface);
+    final Color fgColor = contentColor ?? palette.foreground;
     final Color bgColor = isDark
-        ? Colors.white.withValues(alpha: 0.12)
-        : Colors.black.withValues(alpha: 0.05);
+        ? palette.brandOn.withValues(alpha: 0.12)
+        : palette.foreground.withValues(alpha: 0.05);
     final BorderRadius radius = BorderRadius.circular(12);
 
     return ClipRRect(
@@ -46,8 +47,8 @@ class TransparencyButton extends StatefulAppButton {
             borderRadius: radius,
             border: Border.all(
               color: isDark
-                  ? Colors.white.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
+                  ? palette.brandOn.withValues(alpha: 0.1)
+                  : palette.foreground.withValues(alpha: 0.05),
               width: 1,
             ),
           ),

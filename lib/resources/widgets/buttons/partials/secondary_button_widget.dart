@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:flutter/material.dart';
 
 class SecondaryButton extends StatefulAppButton {
   final Color? backgroundColor;
@@ -23,14 +24,11 @@ class SecondaryButton extends StatefulAppButton {
 
   @override
   Widget buildButton(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final bool isDark = theme.brightness == Brightness.dark;
+    final palette = context.palette;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final Color bgColor = backgroundColor ??
-        (isDark
-            ? theme.colorScheme.surfaceContainerHighest
-            : theme.colorScheme.surfaceContainerHigh);
-    final Color fgColor = contentColor ?? theme.colorScheme.onSurface;
+    final Color bgColor = backgroundColor ?? palette.secondary;
+    final Color fgColor = contentColor ?? palette.secondaryForeground;
     final BorderRadius radius = BorderRadius.circular(14);
 
     return Container(
@@ -43,7 +41,7 @@ class SecondaryButton extends StatefulAppButton {
             ? null
             : <BoxShadow>[
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
+                  color: palette.foreground.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
