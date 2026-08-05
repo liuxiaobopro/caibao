@@ -97,6 +97,7 @@ class _ThinkingBlockState extends State<ThinkingBlock> {
                   p: TextStyle(
                     fontSize: AppTypography.xs,
                     color: palette.mutedForeground,
+                    fontWeight: FontWeight.w500,
                     height: 1.5,
                   ),
                   strong: TextStyle(
@@ -108,6 +109,7 @@ class _ThinkingBlockState extends State<ThinkingBlock> {
                   listBullet: TextStyle(
                     fontSize: AppTypography.xs,
                     color: palette.mutedForeground,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),

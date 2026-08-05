@@ -34,6 +34,7 @@ class AssistantMessageBody extends StatelessWidget {
                 p: TextStyle(
                   fontSize: AppTypography.base,
                   color: palette.foreground,
+                  fontWeight: FontWeight.w500,
                   height: 1.5,
                 ),
                 strong: TextStyle(
@@ -45,6 +46,7 @@ class AssistantMessageBody extends StatelessWidget {
                 listBullet: TextStyle(
                   fontSize: AppTypography.base,
                   color: palette.foreground,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -56,6 +58,7 @@ class AssistantMessageBody extends StatelessWidget {
               style: TextStyle(
                 fontSize: AppTypography.base,
                 color: palette.foreground,
+                fontWeight: FontWeight.w500,
                 height: 1.5,
               ),
             ),

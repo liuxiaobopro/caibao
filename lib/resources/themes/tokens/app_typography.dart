@@ -21,14 +21,17 @@ abstract final class AppTypography {
   /// Chat bubble: sm / md / lg (`lib/chat-font-size.ts`).
   static const TextStyle chatSm = TextStyle(
     fontSize: sm,
+    fontWeight: FontWeight.w500,
     height: leadingBase / sm,
   );
   static const TextStyle chatMd = TextStyle(
     fontSize: base,
+    fontWeight: FontWeight.w500,
     height: leadingLg / base,
   );
   static const TextStyle chatLg = TextStyle(
     fontSize: lg,
+    fontWeight: FontWeight.w500,
     height: leadingX2l / lg,
   );
 }

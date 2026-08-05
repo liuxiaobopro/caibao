@@ -66,7 +66,7 @@ class ChatQuickActions extends StatelessWidget {
                       style: TextStyle(
                         fontSize: AppTypography.sm,
                         color: palette.foreground,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

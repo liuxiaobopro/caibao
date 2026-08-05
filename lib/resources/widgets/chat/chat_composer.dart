@@ -60,6 +60,7 @@ class ChatComposer extends StatelessWidget {
                 style: TextStyle(
                   fontSize: AppTypography.base,
                   color: palette.foreground,
+                  fontWeight: FontWeight.w500,
                 ),
                 decoration: InputDecoration(
                   isDense: true,
@@ -67,7 +68,7 @@ class ChatComposer extends StatelessWidget {
                   hintStyle: TextStyle(
                     fontSize: AppTypography.base,
                     color: palette.mutedForeground,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w500,
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,

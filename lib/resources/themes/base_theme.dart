@@ -114,8 +114,10 @@ ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
     appBarTheme: AppBarTheme(
       surfaceTintColor: Colors.transparent,
       backgroundColor: color.appBar.background,
-      titleTextStyle:
-          textTheme.titleLarge!.copyWith(color: color.appBar.content),
+      titleTextStyle: textTheme.titleLarge!.copyWith(
+        color: color.appBar.content,
+        fontWeight: FontWeight.w700,
+      ),
       iconTheme: IconThemeData(color: color.appBar.content),
       elevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle(
@@ -187,7 +189,11 @@ ThemeData buildAppTheme(ColorStyles color, {required Brightness brightness}) {
     chipTheme: ChipThemeData(
       backgroundColor: palette.secondary,
       selectedColor: palette.brandContainer,
-      labelStyle: TextStyle(color: palette.foreground, fontSize: 12),
+      labelStyle: TextStyle(
+        color: palette.foreground,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
       shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
       side: BorderSide.none,
     ),

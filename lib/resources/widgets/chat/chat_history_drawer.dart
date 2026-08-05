@@ -252,7 +252,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                                           style: TextStyle(
                                             fontSize: AppTypography.sm,
                                             color: palette.mutedForeground,
-                                            fontWeight: FontWeight.w400,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ),
@@ -408,7 +408,7 @@ class _ConversationTile extends StatelessWidget {
                 style: TextStyle(
                   fontSize: AppTypography.base,
                   color: palette.foreground,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

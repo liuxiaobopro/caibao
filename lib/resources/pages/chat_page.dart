@@ -336,6 +336,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                                     style: TextStyle(
                                       fontSize: AppTypography.base,
                                       color: Colors.white,
+                                      fontWeight: FontWeight.w500,
                                       height: 1.4,
                                     ),
                                   ),
@@ -369,6 +370,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                                           p: TextStyle(
                                             fontSize: AppTypography.base,
                                             color: palette.foreground,
+                                            fontWeight: FontWeight.w500,
                                             height: 1.5,
                                           ),
                                           strong: TextStyle(
@@ -380,6 +382,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                                           listBullet: TextStyle(
                                             fontSize: AppTypography.base,
                                             color: palette.foreground,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ),
