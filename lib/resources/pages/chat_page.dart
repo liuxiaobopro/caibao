@@ -302,11 +302,22 @@ class _ChatPageState extends NyPage<ChatPage> {
                       : _messages.isEmpty
                           ? Center(
                               child: Text(
-                                _activeConversationId == null ? '' : '暂无消息',
+                                _activeConversationId == null
+                                    ? '有什么我能帮你的吗？'
+                                    : '暂无消息',
                                 style: TextStyle(
-                                  color: palette.mutedForeground,
-                                  fontSize: AppTypography.base,
+                                  color: _activeConversationId == null
+                                      ? palette.foreground
+                                      : palette.mutedForeground,
+                                  fontSize: _activeConversationId == null
+                                      ? AppTypography.x3l
+                                      : AppTypography.base,
+                                  fontWeight: _activeConversationId == null
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                  letterSpacing: -0.3,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             )
                           : ListView.builder(
