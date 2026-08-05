@@ -436,9 +436,10 @@ class _ChatPageState extends NyPage<ChatPage> {
             ),
             ChatQuickActions(
               onTap: (action) {
-                _composerController.text = action.label;
+                const prompt = '创建智能体: ';
+                _composerController.text = prompt;
                 _composerController.selection = TextSelection.fromPosition(
-                  TextPosition(offset: action.label.length),
+                  const TextPosition(offset: prompt.length),
                 );
               },
             ),

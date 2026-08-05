@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/themes/tokens/app_sizes.dart';
-import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ChatAppBar({
@@ -78,25 +76,6 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ],
       ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.phone_outlined,
-            color: palette.foreground,
-            size: AppSizes.iconXl,
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: Icon(
-            Icons.auto_awesome_outlined,
-            color: palette.foreground,
-            size: AppSizes.iconXl,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.x1),
-      ],
     );
   }
 }

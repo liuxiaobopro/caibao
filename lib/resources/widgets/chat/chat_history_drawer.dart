@@ -9,6 +9,7 @@ import 'package:caibao/resources/pages/profile_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 
@@ -393,6 +394,12 @@ class _ConversationTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
             child: Row(
               children: [
+                Icon(
+                  Icons.chat_bubble_outline_rounded,
+                  size: AppSizes.iconMd,
+                  color: palette.mutedForeground,
+                ),
+                const SizedBox(width: AppSpacing.x2_5),
                 Expanded(
                   child: Text(
                     conversation.title?.isNotEmpty == true

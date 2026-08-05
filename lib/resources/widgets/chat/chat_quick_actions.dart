@@ -16,10 +16,7 @@ class ChatQuickActions extends StatelessWidget {
   final void Function(ChatQuickAction action)? onTap;
 
   static const List<ChatQuickAction> actions = [
-    ChatQuickAction(icon: Icons.bolt, label: '快速'),
-    ChatQuickAction(icon: Icons.auto_awesome, label: 'AI 创作'),
-    ChatQuickAction(icon: Icons.shopping_bag_outlined, label: '买前问菜包'),
-    ChatQuickAction(icon: Icons.edit_outlined, label: '帮我写'),
+    ChatQuickAction(icon: Icons.smart_toy_outlined, label: '创建智能体'),
   ];
 
   @override
@@ -29,12 +26,12 @@ class ChatQuickActions extends StatelessWidget {
     return ColoredBox(
       color: palette.card,
       child: SizedBox(
-        height: 40,
+        height: 40 + AppSpacing.x3,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.x4,
-            0,
+            AppSpacing.x3,
             AppSpacing.x4,
             AppSpacing.x1,
           ),
