@@ -1,3 +1,4 @@
+import 'package:caibao_theme/caibao_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'models.dart';
@@ -142,7 +143,7 @@ class _TodoAppState extends State<TodoApp> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final palette = context.palette;
 
     return Column(
       children: [
@@ -150,7 +151,10 @@ class _TodoAppState extends State<TodoApp> {
           alignment: Alignment.centerRight,
           child: IconButton(
             onPressed: _createGroup,
-            icon: const Icon(Icons.create_new_folder_outlined),
+            icon: Icon(
+              Icons.create_new_folder_outlined,
+              color: palette.foreground,
+            ),
             tooltip: '新建分组',
           ),
         ),
@@ -191,7 +195,7 @@ class _TodoAppState extends State<TodoApp> {
                               child: Text(
                                 '暂无分组，点击右上角新建',
                                 style: TextStyle(
-                                  color: scheme.onSurfaceVariant,
+                                  color: palette.mutedForeground,
                                 ),
                               ),
                             )
@@ -204,7 +208,7 @@ class _TodoAppState extends State<TodoApp> {
                                       child: Text(
                                         '暂无待办',
                                         style: TextStyle(
-                                          color: scheme.onSurfaceVariant,
+                                          color: palette.mutedForeground,
                                         ),
                                       ),
                                     )
@@ -216,7 +220,7 @@ class _TodoAppState extends State<TodoApp> {
                                       itemBuilder: (context, index) {
                                         final item = _todos[index];
                                         return Material(
-                                          color: scheme.surfaceContainerHighest,
+                                          color: palette.secondary,
                                           borderRadius:
                                               BorderRadius.circular(16),
                                           child: ListTile(
@@ -233,8 +237,8 @@ class _TodoAppState extends State<TodoApp> {
                                                         .lineThrough
                                                     : null,
                                                 color: item.done
-                                                    ? scheme.onSurfaceVariant
-                                                    : scheme.onSurface,
+                                                    ? palette.mutedForeground
+                                                    : palette.foreground,
                                               ),
                                             ),
                                             trailing: IconButton(
@@ -242,7 +246,7 @@ class _TodoAppState extends State<TodoApp> {
                                                   _deleteTodo(item),
                                               icon: Icon(
                                                 Icons.delete_outline,
-                                                color: scheme.onSurfaceVariant,
+                                                color: palette.mutedForeground,
                                               ),
                                             ),
                                           ),

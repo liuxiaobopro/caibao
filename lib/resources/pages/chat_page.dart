@@ -5,7 +5,6 @@ import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/app/networking/chat_stream_client.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/app/utils/message_segments.dart';
@@ -30,7 +29,7 @@ class _ChatPageState extends NyPage<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   final ChatStreamClient _streamClient = ChatStreamClient();
 
-  String _title = '新对话';
+  String _title = '菜包';
   String? _activeConversationId;
   List<ChatConversation> _conversations = [];
   List<ChatMessage> _messages = [];
@@ -38,9 +37,11 @@ class _ChatPageState extends NyPage<ChatPage> {
   bool _loadingConversations = false;
   bool _loadingMessages = false;
   bool _sending = false;
+  bool _showScrollToBottom = false;
 
   @override
   get init => () async {
+        _scrollController.addListener(_onScroll);
         await _loadUser();
         await _loadConversations();
       };
@@ -50,9 +51,19 @@ class _ChatPageState extends NyPage<ChatPage> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _composerController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final pos = _scrollController.position;
+    final show = pos.maxScrollExtent - pos.pixels > 80;
+    if (show != _showScrollToBottom) {
+      setState(() => _showScrollToBottom = show);
+    }
   }
 
   Future<void> _loadUser() async {
@@ -119,7 +130,7 @@ class _ChatPageState extends NyPage<ChatPage> {
 
   void _onNewChat() {
     setState(() {
-      _title = '新对话';
+      _title = '菜包';
       _activeConversationId = null;
       _messages = [];
       _composerController.clear();
@@ -130,7 +141,7 @@ class _ChatPageState extends NyPage<ChatPage> {
     setState(() {
       _title = conversation.title?.isNotEmpty == true
           ? conversation.title!
-          : '新对话';
+          : '菜包';
       _activeConversationId = conversation.id;
       _messages = [];
     });
@@ -270,6 +281,7 @@ class _ChatPageState extends NyPage<ChatPage> {
       drawer: ChatHistoryDrawer(
         user: _user,
         conversations: _conversations,
+        activeConversationId: _activeConversationId,
         loading: _loadingConversations,
         onNewChat: _onNewChat,
         onSelectConversation: _onSelectConversation,
@@ -285,124 +297,182 @@ class _ChatPageState extends NyPage<ChatPage> {
         child: Column(
           children: [
             Expanded(
-              child: _loadingMessages
-                  ? const Center(child: CircularProgressIndicator())
-                  : _messages.isEmpty
-                      ? Center(
-                          child: Text(
-                            _activeConversationId == null ? '' : '暂无消息',
-                            style: TextStyle(
-                              color: palette.mutedForeground,
-                              fontSize: AppTypography.base,
-                            ),
-                          ),
-                        )
-                      : ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.x4,
-                            vertical: AppSpacing.x3,
-                          ),
-                          itemCount: _messages.length,
-                          itemBuilder: (context, index) {
-                            final message = _messages[index];
-                            final isUser =
-                                message.role == ChatMessageRole.user;
-                            final content = message.content?.isNotEmpty == true
-                                ? message.content!
-                                : (message.status == 'streaming' ? '...' : '');
-
-                            if (isUser) {
-                              return Align(
-                                alignment: Alignment.centerRight,
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                    bottom: AppSpacing.x3,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.x4,
-                                    vertical: AppSpacing.x3,
-                                  ),
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.sizeOf(context).width * 0.78,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: palette.userBubble,
-                                    borderRadius: AppRadius.x2lAll,
-                                  ),
-                                  child: Text(
-                                    content,
-                                    style: TextStyle(
-                                      fontSize: AppTypography.base,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.4,
-                                    ),
-                                  ),
+              child: Stack(
+                children: [
+                  _loadingMessages
+                      ? const Center(child: CircularProgressIndicator())
+                      : _messages.isEmpty
+                          ? Center(
+                              child: Text(
+                                _activeConversationId == null ? '' : '暂无消息',
+                                style: TextStyle(
+                                  color: palette.mutedForeground,
+                                  fontSize: AppTypography.base,
                                 ),
-                              );
-                            }
-
-                            final segments = parseMessageSegments(content);
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: AppSpacing.x3,
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  for (final segment in segments)
-                                    if (segment is ThinkingSegment)
-                                      ThinkingBlock(
-                                        text: segment.text,
-                                        streaming: segment.streaming,
-                                      )
-                                    else if (segment is TextSegment &&
-                                        segment.text.trim().isNotEmpty)
-                                      MarkdownBody(
-                                        data: segment.text,
-                                        selectable: true,
-                                        styleSheet:
-                                            MarkdownStyleSheet.fromTheme(
-                                          Theme.of(context),
-                                        ).copyWith(
-                                          p: TextStyle(
-                                            fontSize: AppTypography.base,
-                                            color: palette.foreground,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5,
-                                          ),
-                                          strong: TextStyle(
-                                            fontSize: AppTypography.base,
-                                            color: palette.foreground,
-                                            fontWeight: FontWeight.w700,
-                                            height: 1.5,
-                                          ),
-                                          listBullet: TextStyle(
-                                            fontSize: AppTypography.base,
-                                            color: palette.foreground,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                            )
+                          : ListView.builder(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.x4,
+                                AppSpacing.x4,
+                                AppSpacing.x4,
+                                AppSpacing.x5,
+                              ),
+                              itemCount: _messages.length,
+                              itemBuilder: (context, index) {
+                                final message = _messages[index];
+                                final isUser =
+                                    message.role == ChatMessageRole.user;
+                                final content =
+                                    message.content?.isNotEmpty == true
+                                        ? message.content!
+                                        : (message.status == 'streaming'
+                                            ? '...'
+                                            : '');
+
+                                if (isUser) {
+                                  return Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                        bottom: AppSpacing.x4,
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 12,
+                                      ),
+                                      constraints: BoxConstraints(
+                                        maxWidth:
+                                            MediaQuery.sizeOf(context).width *
+                                                0.78,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: palette.userBubble,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(18),
+                                          topRight: Radius.circular(18),
+                                          bottomLeft: Radius.circular(18),
+                                          bottomRight: Radius.circular(6),
                                         ),
                                       ),
-                                ],
+                                      child: Text(
+                                        content,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.45,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                final segments = parseMessageSegments(content);
+                                return Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                      bottom: AppSpacing.x4,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
+                                    ),
+                                    constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.sizeOf(context).width *
+                                              0.88,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: palette.assistantBubble,
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        for (final segment in segments)
+                                          if (segment is ThinkingSegment)
+                                            ThinkingBlock(
+                                              text: segment.text,
+                                              streaming: segment.streaming,
+                                            )
+                                          else if (segment is TextSegment &&
+                                              segment.text.trim().isNotEmpty)
+                                            MarkdownBody(
+                                              data: segment.text,
+                                              selectable: true,
+                                              styleSheet: MarkdownStyleSheet
+                                                      .fromTheme(
+                                                Theme.of(context),
+                                              )
+                                                  .copyWith(
+                                                p: TextStyle(
+                                                  fontSize: 16,
+                                                  color: palette.foreground,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 1.55,
+                                                ),
+                                                strong: TextStyle(
+                                                  fontSize: 16,
+                                                  color: palette.foreground,
+                                                  fontWeight: FontWeight.w600,
+                                                  height: 1.55,
+                                                ),
+                                                listBullet: TextStyle(
+                                                  fontSize: 16,
+                                                  color: palette.foreground,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 1.55,
+                                                ),
+                                              ),
+                                            ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                  if (_showScrollToBottom)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 8,
+                      child: Center(
+                        child: Material(
+                          color: palette.card,
+                          elevation: 1,
+                          shadowColor: const Color(0x33000000),
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: _scrollToBottom,
+                            child: SizedBox(
+                              width: 36,
+                              height: 36,
+                              child: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: palette.foreground,
+                                size: 22,
                               ),
-                            );
-                          },
+                            ),
+                          ),
                         ),
-            ),
-            if (_activeConversationId == null && _messages.isEmpty)
-              ChatQuickActions(
-                onTap: (action) {
-                  _composerController.text = action.label;
-                  _composerController.selection = TextSelection.fromPosition(
-                    TextPosition(offset: action.label.length),
-                  );
-                },
+                      ),
+                    ),
+                ],
               ),
-            if (_activeConversationId == null && _messages.isEmpty)
-              const SizedBox(height: AppSpacing.x3),
+            ),
+            ChatQuickActions(
+              onTap: (action) {
+                _composerController.text = action.label;
+                _composerController.selection = TextSelection.fromPosition(
+                  TextPosition(offset: action.label.length),
+                );
+              },
+            ),
             ChatComposer(
               controller: _composerController,
               onSubmit: _sending ? null : _onSubmit,

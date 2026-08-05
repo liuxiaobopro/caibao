@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:caibao_theme/caibao_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'hello_api.dart';
@@ -47,24 +48,25 @@ class _HelloAppState extends State<HelloApp> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final palette = context.palette;
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
         Text(
           '示例应用',
-          style: textTheme.headlineSmall?.copyWith(
+          style: TextStyle(
+            fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: scheme.onSurface,
+            color: palette.foreground,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           _status,
-          style: textTheme.bodySmall?.copyWith(
-            color: scheme.onSurfaceVariant,
+          style: TextStyle(
+            fontSize: 13,
+            color: palette.mutedForeground,
           ),
         ),
         if (_error != null) ...[
@@ -73,15 +75,18 @@ class _HelloAppState extends State<HelloApp> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: scheme.error.withValues(alpha: 0.1),
+              color: palette.danger.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: scheme.error.withValues(alpha: 0.4),
+                color: palette.danger.withValues(alpha: 0.4),
               ),
             ),
             child: Text(
               _error!,
-              style: textTheme.bodySmall?.copyWith(color: scheme.error),
+              style: TextStyle(
+                fontSize: 13,
+                color: palette.danger,
+              ),
             ),
           ),
         ],
@@ -91,14 +96,15 @@ class _HelloAppState extends State<HelloApp> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: scheme.surface,
+              color: palette.card,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: scheme.outlineVariant),
+              border: Border.all(color: palette.muted),
             ),
             child: Text(
               const JsonEncoder.withIndent('  ').convert(_me),
-              style: textTheme.bodySmall?.copyWith(
-                color: scheme.onSurface,
+              style: TextStyle(
+                fontSize: 13,
+                color: palette.foreground,
                 fontFamily: 'monospace',
                 height: 1.4,
               ),

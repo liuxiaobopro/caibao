@@ -15,6 +15,7 @@ environment:
   sdk: ^3.10.7
 
 workspace:
+  - packages/caibao_theme
   - packages/hello_app
   - packages/todo_app
 
@@ -33,6 +34,7 @@ dependencies:
   url_launcher: ^6.3.2
   getuiflut: ^0.2.41
   flutter_bugly: ^1.1.1
+  caibao_theme: any
   caibao_hello_app: any
   caibao_todo_app: any
 

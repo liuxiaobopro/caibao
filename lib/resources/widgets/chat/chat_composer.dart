@@ -2,21 +2,20 @@ import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
-import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class ChatComposer extends StatelessWidget {
   const ChatComposer({
     super.key,
-    this.controller,
+    required this.controller,
     this.onSubmit,
   });
 
-  final TextEditingController? controller;
+  final TextEditingController controller;
   final ValueChanged<String>? onSubmit;
 
   void _submit() {
-    final text = controller?.text ?? '';
+    final text = controller.text;
     if (onSubmit == null || text.trim().isEmpty) return;
     onSubmit!(text);
   }
@@ -25,7 +24,8 @@ class ChatComposer extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    return Padding(
+    return Container(
+      color: palette.card,
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.x4,
         AppSpacing.x2,
@@ -33,13 +33,12 @@ class ChatComposer extends StatelessWidget {
         AppSpacing.x3,
       ),
       child: Container(
-        height: 52,
+        constraints: const BoxConstraints(minHeight: 48),
         decoration: BoxDecoration(
-          color: palette.card,
+          color: palette.secondary,
           borderRadius: AppRadius.fullAll,
-          border: Border.all(color: palette.muted),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x2),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x1),
         child: Row(
           children: [
             IconButton(
@@ -48,7 +47,7 @@ class ChatComposer extends StatelessWidget {
               icon: Icon(
                 Icons.camera_alt_outlined,
                 color: palette.foreground,
-                size: AppSizes.iconXl,
+                size: 22,
               ),
             ),
             Expanded(
@@ -58,17 +57,18 @@ class ChatComposer extends StatelessWidget {
                 onSubmitted: (_) => _submit(),
                 enabled: onSubmit != null,
                 style: TextStyle(
-                  fontSize: AppTypography.base,
+                  fontSize: 15,
                   color: palette.foreground,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
+                  height: 1.35,
                 ),
                 decoration: InputDecoration(
                   isDense: true,
                   hintText: '发消息或按住说话',
                   hintStyle: TextStyle(
-                    fontSize: AppTypography.base,
+                    fontSize: 15,
                     color: palette.mutedForeground,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w400,
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -80,15 +80,39 @@ class ChatComposer extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: onSubmit == null ? null : _submit,
+              onPressed: () {},
               visualDensity: VisualDensity.compact,
               icon: Icon(
-                Icons.send_rounded,
-                color: onSubmit == null
-                    ? palette.mutedForeground
-                    : palette.foreground,
-                size: AppSizes.iconXl,
+                Icons.emoji_emotions_outlined,
+                color: palette.foreground,
+                size: 22,
               ),
+            ),
+            ListenableBuilder(
+              listenable: controller,
+              builder: (context, _) {
+                final hasText = controller.text.trim().isNotEmpty;
+                if (hasText && onSubmit != null) {
+                  return IconButton(
+                    onPressed: _submit,
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(
+                      Icons.send_rounded,
+                      color: palette.userBubble,
+                      size: AppSizes.iconXl,
+                    ),
+                  );
+                }
+                return IconButton(
+                  onPressed: () {},
+                  visualDensity: VisualDensity.compact,
+                  icon: Icon(
+                    Icons.add_circle_outline,
+                    color: palette.foreground,
+                    size: 24,
+                  ),
+                );
+              },
             ),
           ],
         ),

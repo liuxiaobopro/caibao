@@ -3,9 +3,7 @@ import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/app/networking/chat_stream_client.dart';
 import 'package:caibao/bootstrap/extensions.dart';
-import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
-import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/resources/widgets/chat/assistant_message_body.dart';
 import 'package:caibao/resources/widgets/chat/chat_composer.dart';
 import 'package:flutter/material.dart';
@@ -216,11 +214,11 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                 alignment: Alignment.centerRight,
                                 child: Container(
                                   margin: const EdgeInsets.only(
-                                    bottom: AppSpacing.x3,
+                                    bottom: AppSpacing.x4,
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.x4,
-                                    vertical: AppSpacing.x3,
+                                    horizontal: 16,
+                                    vertical: 12,
                                   ),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -228,25 +226,46 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: palette.userBubble,
-                                    borderRadius: AppRadius.x2lAll,
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(18),
+                                      topRight: Radius.circular(18),
+                                      bottomLeft: Radius.circular(18),
+                                      bottomRight: Radius.circular(6),
+                                    ),
                                   ),
                                   child: Text(
                                     content,
                                     style: TextStyle(
-                                      fontSize: AppTypography.base,
+                                      fontSize: 16,
                                       color: palette.brandOn,
-                                      height: 1.4,
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.45,
                                     ),
                                   ),
                                 ),
                               );
                             }
 
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: AppSpacing.x3,
+                            return Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                  bottom: AppSpacing.x4,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.sizeOf(context).width * 0.88,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: palette.assistantBubble,
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: AssistantMessageBody(content: content),
                               ),
-                              child: AssistantMessageBody(content: content),
                             );
                           },
                         ),

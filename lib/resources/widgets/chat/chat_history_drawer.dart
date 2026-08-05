@@ -9,7 +9,6 @@ import 'package:caibao/resources/pages/profile_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
-import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +21,7 @@ class ChatHistoryDrawer extends StatelessWidget {
     required this.onRefresh,
     required this.onNavigate,
     required this.conversations,
+    this.activeConversationId,
     this.user,
     this.loading = false,
   });
@@ -32,6 +32,7 @@ class ChatHistoryDrawer extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final Future<void> Function(dynamic route) onNavigate;
   final List<ChatConversation> conversations;
+  final String? activeConversationId;
   final User? user;
   final bool loading;
 
@@ -60,55 +61,45 @@ class ChatHistoryDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.x4,
-                    AppSpacing.x2,
-                    AppSpacing.x2,
-                    AppSpacing.x3,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(12, 4, 8, 8),
                   child: Row(
                     children: [
                       IconButton(
                         onPressed: () {},
                         icon: Icon(
-                          Icons.crop_free,
+                          Icons.crop_free_rounded,
                           color: palette.foreground,
-                          size: AppSizes.iconXl,
+                          size: 24,
                         ),
                       ),
                       const Spacer(),
                       IconButton(
                         onPressed: () {},
                         icon: Icon(
-                          Icons.notifications_none,
+                          Icons.notifications_none_rounded,
                           color: palette.foreground,
-                          size: AppSizes.iconXl,
+                          size: 24,
                         ),
                       ),
                       IconButton(
                         onPressed: () {},
                         icon: Icon(
-                          Icons.search,
+                          Icons.search_rounded,
                           color: palette.foreground,
-                          size: AppSizes.iconXl,
+                          size: 24,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x4),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Container(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.x4,
-                      AppSpacing.x4,
-                      AppSpacing.x4,
-                      AppSpacing.x3,
-                    ),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
                     decoration: BoxDecoration(
                       color: palette.card,
-                      borderRadius: AppRadius.x3lAll,
-                      boxShadow: AppShadows.sm,
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: AppShadows.soft,
                     ),
                     child: Column(
                       children: [
@@ -120,30 +111,38 @@ class ChatHistoryDrawer extends StatelessWidget {
                               CircleAvatar(
                                 radius: 22,
                                 backgroundColor: palette.brandContainer,
-                                child: Text(
-                                  initial,
-                                  style: TextStyle(
-                                    color: palette.brandDark,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: AppTypography.lg,
-                                  ),
-                                ),
+                                backgroundImage: user?.avatarUrl != null &&
+                                        user!.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(user!.avatarUrl!)
+                                    : null,
+                                child: user?.avatarUrl != null &&
+                                        user!.avatarUrl!.isNotEmpty
+                                    ? null
+                                    : Text(
+                                        initial,
+                                        style: TextStyle(
+                                          color: palette.brandDark,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: AppTypography.lg,
+                                        ),
+                                      ),
                               ),
-                              const SizedBox(width: AppSpacing.x3),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   nickname,
                                   style: TextStyle(
-                                    fontSize: AppTypography.lg,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
                                     color: palette.foreground,
+                                    letterSpacing: -0.2,
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.x5),
+                        const SizedBox(height: 18),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
@@ -153,7 +152,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                               onTap: () => _go(context, AgentsPage.path),
                             ),
                             _Shortcut(
-                              icon: Icons.folder_outlined,
+                              icon: Icons.cloud_outlined,
                               label: '云盘',
                               onTap: () => _go(context, DrivePage.path),
                             ),
@@ -173,29 +172,21 @@ class ChatHistoryDrawer extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.x5),
+                const SizedBox(height: 28),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x5),
-                  child: Row(
-                    children: [
-                      Text(
-                        '问答',
-                        style: TextStyle(
-                          fontSize: AppTypography.lg,
-                          fontWeight: FontWeight.w700,
-                          color: palette.foreground,
-                        ),
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.more_horiz,
-                        color: palette.mutedForeground,
-                        size: AppSizes.iconXl,
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    '对话历史',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: palette.foreground,
+                      letterSpacing: -0.3,
+                      height: 1.2,
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.x2),
+                const SizedBox(height: 8),
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: onRefresh,
@@ -211,9 +202,9 @@ class ChatHistoryDrawer extends StatelessWidget {
                             ? ListView(
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.x5,
-                                  AppSpacing.x8,
-                                  AppSpacing.x5,
+                                  20,
+                                  32,
+                                  20,
                                   100,
                                 ),
                                 children: [
@@ -230,9 +221,9 @@ class ChatHistoryDrawer extends StatelessWidget {
                             : ListView.builder(
                                 physics: const AlwaysScrollableScrollPhysics(),
                                 padding: const EdgeInsets.fromLTRB(
-                                  AppSpacing.x5,
+                                  12,
                                   0,
-                                  AppSpacing.x5,
+                                  12,
                                   100,
                                 ),
                                 itemCount: groups.length,
@@ -243,22 +234,26 @@ class ChatHistoryDrawer extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: AppSpacing.x3,
-                                          bottom: AppSpacing.x2,
+                                        padding: const EdgeInsets.fromLTRB(
+                                          8,
+                                          16,
+                                          8,
+                                          8,
                                         ),
                                         child: Text(
                                           group.label,
                                           style: TextStyle(
-                                            fontSize: AppTypography.sm,
+                                            fontSize: 13,
                                             color: palette.mutedForeground,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.w400,
                                           ),
                                         ),
                                       ),
                                       ...group.items.map(
                                         (item) => _ConversationTile(
                                           conversation: item,
+                                          selected:
+                                              item.id == activeConversationId,
                                           onTap: () {
                                             Navigator.of(context).pop();
                                             onSelectConversation(item);
@@ -278,12 +273,11 @@ class ChatHistoryDrawer extends StatelessWidget {
             Positioned(
               left: 0,
               right: 0,
-              bottom: AppSpacing.x6,
+              bottom: 28,
               child: Center(
                 child: Material(
                   color: palette.card,
-                  elevation: 2,
-                  shadowColor: const Color(0x26000000),
+                  elevation: 0,
                   borderRadius: AppRadius.fullAll,
                   child: InkWell(
                     onTap: () {
@@ -293,26 +287,27 @@ class ChatHistoryDrawer extends StatelessWidget {
                     borderRadius: AppRadius.fullAll,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.x6,
-                        vertical: AppSpacing.x3_5,
+                        horizontal: 28,
+                        vertical: 14,
                       ),
                       decoration: BoxDecoration(
+                        color: palette.card,
                         borderRadius: AppRadius.fullAll,
-                        border: Border.all(color: palette.muted),
+                        boxShadow: AppShadows.soft,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.chat_bubble_outline,
-                            size: AppSizes.iconLg,
+                            Icons.chat_bubble_outline_rounded,
+                            size: 20,
                             color: palette.foreground,
                           ),
-                          const SizedBox(width: AppSpacing.x2),
+                          const SizedBox(width: 8),
                           Text(
                             '新建对话',
                             style: TextStyle(
-                              fontSize: AppTypography.base,
+                              fontSize: 15,
                               fontWeight: FontWeight.w600,
                               color: palette.foreground,
                             ),
@@ -349,19 +344,17 @@ class _Shortcut extends StatelessWidget {
       onTap: onTap,
       borderRadius: AppRadius.lgAll,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x2,
-          vertical: AppSpacing.x1,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
           children: [
-            Icon(icon, size: AppSizes.iconXl, color: palette.foreground),
-            const SizedBox(height: AppSpacing.x1_5),
+            Icon(icon, size: 24, color: palette.foreground),
+            const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: AppTypography.xs,
-                color: palette.foreground,
+                fontSize: 11,
+                color: palette.mutedForeground,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -374,56 +367,68 @@ class _Shortcut extends StatelessWidget {
 class _ConversationTile extends StatelessWidget {
   const _ConversationTile({
     required this.conversation,
+    required this.selected,
     required this.onTap,
     required this.onLongPress,
   });
 
   final ChatConversation conversation;
+  final bool selected;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    return InkWell(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.x3),
-        child: Row(
-          children: [
-            Icon(
-              Icons.chat_bubble_outline,
-              size: AppSizes.iconLg,
-              color: palette.mutedForeground,
-            ),
-            const SizedBox(width: AppSpacing.x3),
-            Expanded(
-              child: Text(
-                conversation.title?.isNotEmpty == true
-                    ? conversation.title!
-                    : '新对话',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: AppTypography.base,
-                  color: palette.foreground,
-                  fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Material(
+        color: selected ? palette.secondary : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    conversation.title?.isNotEmpty == true
+                        ? conversation.title!
+                        : '新对话',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: palette.foreground,
+                      fontWeight: FontWeight.w400,
+                      height: 1.25,
+                    ),
+                  ),
                 ),
-              ),
+                if (selected) ...[
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.more_horiz_rounded,
+                    size: AppSizes.iconLg,
+                    color: palette.mutedForeground,
+                  ),
+                ] else if (conversation.unread) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF006BFF),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              ],
             ),
-            if (conversation.unread) ...[
-              const SizedBox(width: AppSpacing.x2),
-              Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3B82F6),
-                  borderRadius: AppRadius.fullAll,
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );
