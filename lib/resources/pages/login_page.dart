@@ -1,3 +1,4 @@
+import 'package:caibao/app/analytics/analytics.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/api_service.dart';
 import 'package:caibao/bootstrap/extensions.dart';
@@ -68,6 +69,9 @@ class _LoginPageState extends NyPage<LoginPage> {
           'avatar_url': me?.avatarUrl,
         },
       );
+
+      Analytics.instance.track('login', page: '/login');
+      await Analytics.instance.flush();
 
       await routeTo(ChatPage.path, navigationType: NavigationType.pushAndForgetAll);
     } on ApiException catch (e) {

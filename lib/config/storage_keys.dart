@@ -25,6 +25,8 @@ final class StorageKeysConfig {
 
   static final StorageKey getuiClientId = 'SK_GETUI_CLIENT_ID';
 
+  static final StorageKey deviceId = 'SK_DEVICE_ID';
+
   // static final StorageKey coins = 'SK_COINS';
 
   /// Add your storage keys here...

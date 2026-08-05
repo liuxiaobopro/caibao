@@ -365,6 +365,16 @@ class ApiService extends NyApiService {
     await _data((dio) => dio.post('/llm-models/$id/enable'));
   }
 
+  Future<int> trackEvents(List<Map<String, dynamic>> events) async {
+    final data = await _data(
+      (dio) => dio.post('/analytics/events', data: {'events': events}),
+    );
+    final map = Map<String, dynamic>.from(data as Map? ?? {});
+    final accepted = map['accepted'];
+    if (accepted is int) return accepted;
+    return int.tryParse('${accepted ?? events.length}') ?? events.length;
+  }
+
   Future<dynamic> _data(
     Future Function(Dio dio) request, {
     bool auth = true,

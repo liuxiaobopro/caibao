@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:caibao/app/analytics/analytics.dart';
+import 'package:caibao/app/analytics/analytics_route_observer.dart';
 import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/config/localization.dart';
 import 'package:caibao/resources/widgets/loader_widget.dart';
@@ -22,7 +26,10 @@ class Main extends StatefulWidget {
         onUnknownRoute = nylo.router!.unknownRoute(),
         navigatorKey = NyNavigator.instance.router.navigatorKey,
         initialRoute = nylo.getInitialRoute(),
-        navigatorObservers = nylo.getNavigatorObservers(),
+        navigatorObservers = [
+          ...nylo.getNavigatorObservers(),
+          AnalyticsRouteObserver(),
+        ],
         nylo = nylo,
         // Always use MaterialApp.theme; NyThemeManager swaps themeData.
         themeMode = ThemeMode.light;
@@ -34,13 +41,32 @@ class Main extends StatefulWidget {
 class _MainState extends NyPage<Main> {
   @override
   get init => () async {
+        await Analytics.instance.init();
+        if (!mounted) return;
         await ThemePreference.restore(context);
       };
 
   /// Map of lifecycle actions
   @override
-  get lifecycleActions =>
-      widget.nylo?.appLifecycleStates ?? <AppLifecycleState, dynamic Function()>{};
+  get lifecycleActions {
+    final base = widget.nylo?.appLifecycleStates ??
+        <AppLifecycleState, dynamic Function()>{};
+    return {
+      ...base,
+      AppLifecycleState.paused: () {
+        base[AppLifecycleState.paused]?.call();
+        unawaited(Analytics.instance.flush());
+      },
+      AppLifecycleState.detached: () {
+        base[AppLifecycleState.detached]?.call();
+        unawaited(Analytics.instance.flush());
+      },
+      AppLifecycleState.hidden: () {
+        base[AppLifecycleState.hidden]?.call();
+        unawaited(Analytics.instance.flush());
+      },
+    };
+  }
 
   /// Disable dev panel for main app page.
   @override

@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
 import 'package:caibao/config/app.dart';
 import 'package:caibao/resources/widgets/splash_screen.dart';
 import '../resources/widgets/main_widget.dart';
 import 'package:caibao/bootstrap/providers.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bugly/flutter_bugly.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 /* Boot
@@ -37,11 +41,29 @@ class Boot {
 |-------------------------------------------------------------------------- */
 
 Future<void> _init() async {
-  /// Example: Initializing StorageConfig
-  // StorageConfig.init(
-  //   androidOptions: AndroidOptions(
-  //     resetOnError: true,
-  //     encryptedSharedPreferences: false
-  //   )
-  // );
+  await _initBugly();
+}
+
+Future<void> _initBugly() async {
+  if (getEnv('BUGLY_ENABLED', defaultValue: false) != true) {
+    return;
+  }
+
+  final androidAppId =
+      getEnv('BUGLY_ANDROID_APP_ID', defaultValue: '')?.toString() ?? '';
+  final iOSAppId =
+      getEnv('BUGLY_IOS_APP_ID', defaultValue: '')?.toString() ?? '';
+
+  if (Platform.isAndroid && androidAppId.isEmpty) {
+    return;
+  }
+  if (Platform.isIOS && iOSAppId.isEmpty) {
+    return;
+  }
+
+  await FlutterBugly.init(
+    androidAppId: androidAppId.isEmpty ? null : androidAppId,
+    iOSAppId: iOSAppId.isEmpty ? null : iOSAppId,
+    debugMode: kDebugMode,
+  );
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:caibao/app/analytics/analytics.dart';
 import 'package:caibao/config/storage_keys.dart';
 import 'package:flutter/foundation.dart';
 import 'package:getuiflut/getuiflut.dart';
@@ -43,6 +44,10 @@ class PushNotificationsProvider implements NyProvider {
       onReceiveClientId: (String message) async {
         NyLogger.info('Getui CID: $message');
         await NyStorage.save(StorageKeysConfig.getuiClientId, message);
+        Analytics.instance.track(
+          'getui_cid',
+          props: {'cid': message},
+        );
       },
       onReceiveOnlineState: (String online) async {
         if (kDebugMode) {
