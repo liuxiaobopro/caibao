@@ -23,6 +23,13 @@ metro -h
 
 ## Agent Skills
 
+### 必加载（本仓库）
+
+| Skill | 用途 |
+|-------|------|
+| caibao-overview | 菜包业务架构、ApiService、SSE、小应用 |
+| nylo-overview | Nylo 7.x 框架模式与 Assets 规则 |
+
 ### 项目级（`.agents/skills/`，来源 [flutter/skills](https://skills.sh/flutter/skills)）
 
 | Skill | 用途 |
