@@ -10,7 +10,6 @@ import 'package:caibao/resources/pages/login_page.dart';
 import 'package:caibao/resources/pages/not_found_page.dart';
 import 'package:caibao/resources/pages/profile_page.dart';
 import 'package:caibao/resources/pages/storage_configs_page.dart';
-import 'package:caibao/resources/pages/todos_app_page.dart';
 import 'package:caibao/routes/guards/auth_route_guard.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -26,7 +25,6 @@ NyRouter appRouter() => nyRoutes((NyRouter router) {
       router.add(DrivePage.path).addRouteGuard(AuthRouteGuard());
       router.add(AppsPage.path).addRouteGuard(AuthRouteGuard());
       router.add(AppDetailPage.path).addRouteGuard(AuthRouteGuard());
-      router.add(TodosAppPage.path).addRouteGuard(AuthRouteGuard());
       router.add(StorageConfigsPage.path).addRouteGuard(AuthRouteGuard());
       router.add(LlmModelsPage.path).addRouteGuard(AuthRouteGuard());
       router.add(HomePage.path);

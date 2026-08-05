@@ -1,7 +1,6 @@
 import 'package:caibao/app/apps/registry.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/app_detail_page.dart';
-import 'package:caibao/resources/pages/todos_app_page.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
@@ -19,13 +18,6 @@ class _AppsPageState extends NyPage<AppsPage> {
   bool get stateManaged => false;
 
   void _openApp(AppMeta app) {
-    if (app.slug == 'todos') {
-      routeTo(
-        TodosAppPage.path,
-        data: {'slug': app.slug, 'name': app.name},
-      );
-      return;
-    }
     routeTo(
       AppDetailPage.path,
       data: {

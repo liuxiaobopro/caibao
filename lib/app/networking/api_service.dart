@@ -4,11 +4,11 @@ import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/llm_model.dart';
 import 'package:caibao/app/models/storage_config.dart';
-import 'package:caibao/app/models/todo.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/dio/interceptors/bearer_auth_interceptor.dart';
 import 'package:caibao/bootstrap/decoders.dart';
+import 'package:caibao_todo_app/caibao_todo_app.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class ApiService extends NyApiService {
