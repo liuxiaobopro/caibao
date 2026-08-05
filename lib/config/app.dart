@@ -11,7 +11,7 @@ import 'package:nylo_framework/nylo_framework.dart';
 
 final class AppConfig {
   // The name of the application.
-  static final String appName = getEnv('APP_NAME', defaultValue: 'Nylo');
+  static final String appName = getEnv('APP_NAME', defaultValue: '菜包');
 
   // The version of the application.
   static final String version = getEnv('APP_VERSION', defaultValue: '1.0.0');
