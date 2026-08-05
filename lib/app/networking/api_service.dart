@@ -3,7 +3,6 @@ import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/llm_model.dart';
-import 'package:caibao/app/models/mini_app.dart';
 import 'package:caibao/app/models/storage_config.dart';
 import 'package:caibao/app/models/todo.dart';
 import 'package:caibao/app/models/user.dart';
@@ -204,21 +203,6 @@ class ApiService extends NyApiService {
       throw ApiException('获取文件地址失败');
     }
     return url;
-  }
-
-  Future<List<MiniApp>> listApps() async {
-    final data = await _data((dio) => dio.get('/apps'));
-    final map = Map<String, dynamic>.from(data as Map);
-    return (map['items'] as List? ?? [])
-        .map((e) => MiniApp.fromJson(e))
-        .toList();
-  }
-
-  Future<MiniApp> getApp(String slug) async {
-    final data = await _data(
-      (dio) => dio.get('/apps/${Uri.encodeComponent(slug)}'),
-    );
-    return MiniApp.fromJson(data);
   }
 
   Future<List<TodoGroup>> listTodoGroups() async {
