@@ -9,6 +9,7 @@ import 'package:caibao/resources/widgets/chat/chat_app_bar.dart';
 import 'package:caibao/resources/widgets/chat/chat_composer.dart';
 import 'package:caibao/resources/widgets/chat/chat_history_drawer.dart';
 import 'package:caibao/resources/widgets/chat/chat_quick_actions.dart';
+import 'package:caibao/resources/widgets/chat/message_attachments.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -22,6 +23,8 @@ class _ChatPageState extends NyPage<ChatPage> {
   ChatController get controller => widget.controller;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ChatComposerState> _composerKey =
+      GlobalKey<ChatComposerState>();
   final TextEditingController _composerController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _showScrollToBottom = false;
@@ -30,7 +33,10 @@ class _ChatPageState extends NyPage<ChatPage> {
   get init => () async {
         _scrollController.addListener(_onScroll);
         controller.onScrollToBottom = _scrollToBottom;
-        controller.onClearComposer = _composerController.clear;
+        controller.onClearComposer = () {
+          _composerController.clear();
+          _composerKey.currentState?.clearAttachments();
+        };
         await controller.loadUser();
         await controller.loadConversations();
       };
@@ -151,6 +157,9 @@ class _ChatPageState extends NyPage<ChatPage> {
                                             : '');
 
                                 if (isUser) {
+                                  final showText = content.isNotEmpty &&
+                                      !(content == '[附件]' &&
+                                          message.attachments.isNotEmpty);
                                   return Align(
                                     alignment: Alignment.centerRight,
                                     child: Container(
@@ -175,14 +184,29 @@ class _ChatPageState extends NyPage<ChatPage> {
                                           bottomRight: Radius.circular(6),
                                         ),
                                       ),
-                                      child: Text(
-                                        content,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: palette.onUserBubble,
-                                          fontWeight: FontWeight.w400,
-                                          height: 1.45,
-                                        ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        children: [
+                                          if (message.attachments.isNotEmpty)
+                                            MessageAttachments(
+                                              attachments: message.attachments,
+                                              onUserBubble: true,
+                                            ),
+                                          if (message.attachments.isNotEmpty &&
+                                              showText)
+                                            const SizedBox(height: 8),
+                                          if (showText)
+                                            Text(
+                                              content,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: palette.onUserBubble,
+                                                fontWeight: FontWeight.w400,
+                                                height: 1.45,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   );
@@ -207,8 +231,21 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       color: palette.assistantBubble,
                                       borderRadius: BorderRadius.circular(18),
                                     ),
-                                    child: AssistantMessageBody(
-                                      content: content,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        if (message.attachments.isNotEmpty) ...[
+                                          MessageAttachments(
+                                            attachments: message.attachments,
+                                          ),
+                                          if (content.isNotEmpty)
+                                            const SizedBox(height: 8),
+                                        ],
+                                        AssistantMessageBody(
+                                          content: content,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
@@ -254,8 +291,19 @@ class _ChatPageState extends NyPage<ChatPage> {
               },
             ),
             ChatComposer(
+              key: _composerKey,
               controller: _composerController,
-              onSubmit: c.sending ? null : c.submit,
+              conversationId: c.activeConversationId,
+              enabled: !c.sending,
+              onSubmit: c.sending
+                  ? null
+                  : (text, {fileIds = const [], attachments = const []}) {
+                      c.submit(
+                        text,
+                        fileIds: fileIds,
+                        attachments: attachments,
+                      );
+                    },
             ),
           ],
         ),

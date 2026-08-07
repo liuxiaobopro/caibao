@@ -1,6 +1,7 @@
 import 'package:caibao/app/controllers/controller.dart';
 import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/chat_message.dart';
+import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/api_service.dart';
@@ -115,9 +116,13 @@ class ChatController extends Controller {
     }
   }
 
-  Future<void> submit(String text) async {
+  Future<void> submit(
+    String text, {
+    List<String> fileIds = const [],
+    List<DriveFile> attachments = const [],
+  }) async {
     final content = text.trim();
-    if (content.isEmpty || sending) return;
+    if ((content.isEmpty && fileIds.isEmpty) || sending) return;
 
     setState(setState: () => sending = true);
     onClearComposer?.call();
@@ -125,8 +130,14 @@ class ChatController extends Controller {
     var conversationId = activeConversationId;
     try {
       if (conversationId == null) {
-        final convTitle =
-            content.length > 64 ? '${content.substring(0, 64)}...' : content;
+        final titleSource = content.isNotEmpty
+            ? content
+            : (attachments.isNotEmpty
+                ? (attachments.first.name ?? '图片')
+                : '新对话');
+        final convTitle = titleSource.length > 64
+            ? '${titleSource.substring(0, 64)}...'
+            : titleSource;
         conversationId = await api<ApiService>(
           (request) => request.createConversation(title: convTitle),
         );
@@ -135,14 +146,15 @@ class ChatController extends Controller {
         }
         setState(setState: () {
           activeConversationId = conversationId;
-          title = content;
+          title = titleSource;
         });
       }
 
       setState(setState: () {
         messages = ChatStreamHandler.appendPendingExchange(
           messages: messages,
-          userContent: content,
+          userContent: content.isNotEmpty ? content : '[附件]',
+          attachments: attachments,
         );
       });
       onScrollToBottom?.call();
@@ -150,6 +162,7 @@ class ChatController extends Controller {
       await _streamClient.streamConversationChat(
         conversationId: conversationId,
         content: content,
+        fileIds: fileIds.isEmpty ? null : fileIds,
         onEvent: (event) {
           if (ChatStreamHandler.isError(event)) {
             showToastSorry(description: event.msg ?? '生成失败');

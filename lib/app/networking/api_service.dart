@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:caibao/app/models/agent.dart';
 import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/chat_message.dart';
@@ -5,6 +7,7 @@ import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/llm_model.dart';
 import 'package:caibao/app/models/notification_item.dart';
 import 'package:caibao/app/models/storage_config.dart';
+import 'package:caibao/app/models/upload_signature.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/dio/interceptors/bearer_auth_interceptor.dart';
@@ -204,6 +207,107 @@ class ApiService extends NyApiService {
       throw ApiException('获取文件地址失败');
     }
     return url;
+  }
+
+  Future<UploadSignature> getUploadSignature({
+    required String filename,
+    String contentType = '',
+  }) async {
+    final data = await _data(
+      (dio) => dio.post(
+        '/files/upload-signature',
+        data: {
+          'filename': filename,
+          'content_type': contentType,
+        },
+      ),
+    );
+    return UploadSignature.fromJson(data);
+  }
+
+  Future<DriveFile> confirmFile({
+    required String storageConfigId,
+    required String objectKey,
+    required String name,
+    required int size,
+    String contentType = '',
+    String? conversationId,
+    String source = 'user',
+  }) async {
+    final body = <String, dynamic>{
+      'storage_config_id': storageConfigId,
+      'object_key': objectKey,
+      'name': name,
+      'size': size,
+      'content_type': contentType,
+      'source': source,
+    };
+    if (conversationId != null && conversationId.isNotEmpty) {
+      body['conversation_id'] = conversationId;
+    }
+    final data = await _data(
+      (dio) => dio.post('/files/confirm', data: body),
+    );
+    return DriveFile.fromJson(data);
+  }
+
+  /// 预签名直传对象存储后 confirm（对齐 Web `uploadFileDirect`）。
+  Future<DriveFile> uploadFileDirect({
+    required File file,
+    required String filename,
+    String contentType = '',
+    String? conversationId,
+    String source = 'user',
+  }) async {
+    final size = await file.length();
+    if (size <= 0) {
+      throw ApiException('文件为空');
+    }
+
+    final sig = await getUploadSignature(
+      filename: filename,
+      contentType: contentType,
+    );
+    final uploadUrl = sig.uploadUrl.trim();
+    if (uploadUrl.isEmpty) {
+      throw ApiException('上传地址无效');
+    }
+
+    final putType =
+        (sig.contentType.isNotEmpty ? sig.contentType : contentType).trim();
+    final putDio = Dio();
+    try {
+      final putRes = await putDio.put<List<int>>(
+        uploadUrl,
+        data: await file.readAsBytes(),
+        options: Options(
+          headers: {
+            if (putType.isNotEmpty) Headers.contentTypeHeader: putType,
+          },
+          contentType: putType.isNotEmpty ? putType : null,
+          validateStatus: (code) => code != null && code >= 200 && code < 300,
+        ),
+      );
+      if (putRes.statusCode == null ||
+          putRes.statusCode! < 200 ||
+          putRes.statusCode! >= 300) {
+        throw ApiException('上传失败（${putRes.statusCode ?? 0}）');
+      }
+    } on DioException catch (e) {
+      throw ApiException(e.message ?? '上传失败');
+    } finally {
+      putDio.close(force: true);
+    }
+
+    return confirmFile(
+      storageConfigId: sig.storageConfigId,
+      objectKey: sig.key,
+      name: filename,
+      size: size,
+      contentType: contentType,
+      conversationId: conversationId,
+      source: source,
+    );
   }
 
   Future<List<TodoGroup>> listTodoGroups() async {

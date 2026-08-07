@@ -1,3 +1,4 @@
+import 'package:caibao/app/models/drive_file.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 enum ChatMessageRole { user, assistant, system }
@@ -11,6 +12,7 @@ class ChatMessage extends Model {
   DateTime? createdAt;
   String? status;
   int? seq;
+  List<DriveFile> attachments;
 
   ChatMessage({
     this.id,
@@ -19,7 +21,9 @@ class ChatMessage extends Model {
     this.createdAt,
     this.status,
     this.seq,
-  }) : super(key: key);
+    List<DriveFile>? attachments,
+  })  : attachments = attachments ?? [],
+        super(key: key);
 
   ChatMessage.fromJson(dynamic data)
       : id = data['id']?.toString(),
@@ -32,6 +36,9 @@ class ChatMessage extends Model {
         seq = data['seq'] is int
             ? data['seq'] as int
             : int.tryParse('${data['seq'] ?? ''}'),
+        attachments = (data['attachments'] as List? ?? [])
+            .map((e) => DriveFile.fromJson(e))
+            .toList(),
         super(key: key);
 
   static ChatMessageRole _parseRole(dynamic value) {
@@ -54,6 +61,7 @@ class ChatMessage extends Model {
       'created_at': createdAt?.toIso8601String(),
       'status': status,
       'seq': seq,
+      'attachments': attachments.map((e) => e.toJson()).toList(),
     };
   }
 }

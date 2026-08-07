@@ -1,5 +1,6 @@
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/app/models/chat_sse_event.dart';
+import 'package:caibao/app/models/drive_file.dart';
 
 class ChatStreamHandler {
   ChatStreamHandler._();
@@ -7,6 +8,7 @@ class ChatStreamHandler {
   static List<ChatMessage> appendPendingExchange({
     required List<ChatMessage> messages,
     required String userContent,
+    List<DriveFile>? attachments,
   }) {
     return [
       ...messages,
@@ -14,6 +16,7 @@ class ChatStreamHandler {
         role: ChatMessageRole.user,
         content: userContent,
         createdAt: DateTime.now(),
+        attachments: attachments ?? [],
       ),
       ChatMessage(
         role: ChatMessageRole.assistant,
@@ -40,6 +43,7 @@ class ChatStreamHandler {
         content: '${last.content ?? ''}${event.content}',
         createdAt: last.createdAt,
         status: 'streaming',
+        attachments: last.attachments,
       );
       return updated;
     }
@@ -55,6 +59,7 @@ class ChatStreamHandler {
         content: event.content ?? last.content,
         createdAt: last.createdAt,
         status: 'done',
+        attachments: last.attachments,
       );
       return updated;
     }

@@ -57,6 +57,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>用于选择图片发送到对话</string>
+	<key>NSCameraUsageDescription</key>
+	<string>用于拍照发送到对话</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>用于保存对话中的图片</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>UIApplicationSceneManifest</key>

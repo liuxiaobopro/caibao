@@ -37,6 +37,7 @@ dependencies:
   caibao_theme: any
   caibao_hello_app: any
   caibao_todo_app: any
+  image_picker: ^1.2.3
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
