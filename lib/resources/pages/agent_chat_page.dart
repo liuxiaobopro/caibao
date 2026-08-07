@@ -157,7 +157,13 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
             ),
             ChatComposer(
               controller: _composerController,
-              onSubmit: c.sending ? null : c.submit,
+              allowAttachments: false,
+              enabled: !c.sending,
+              onSubmit: c.sending
+                  ? null
+                  : (text, {fileIds = const [], attachments = const []}) {
+                      c.submit(text);
+                    },
             ),
           ],
         ),

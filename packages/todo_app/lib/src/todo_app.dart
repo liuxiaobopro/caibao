@@ -1,9 +1,16 @@
 import 'package:caibao_theme/caibao_theme.dart';
 import 'package:flutter/material.dart';
 
+import 'assistant_panel.dart';
 import 'models.dart';
 import 'todo_api.dart';
-import 'assistant_panel.dart';
+
+/// Host AppBar 可挂载的待办操作（由 [TodoApp] 在生命周期内注册）。
+class TodoAppBarActions {
+  TodoAppBarActions._();
+
+  static VoidCallback? createGroup;
+}
 
 class TodoApp extends StatefulWidget {
   const TodoApp({super.key, required this.api});
@@ -25,11 +32,15 @@ class _TodoAppState extends State<TodoApp> {
   @override
   void initState() {
     super.initState();
+    TodoAppBarActions.createGroup = _createGroup;
     _loadGroups();
   }
 
   @override
   void dispose() {
+    if (TodoAppBarActions.createGroup == _createGroup) {
+      TodoAppBarActions.createGroup = null;
+    }
     _todoController.dispose();
     super.dispose();
   }
@@ -173,165 +184,157 @@ class _TodoAppState extends State<TodoApp> {
     return Stack(
       children: [
         Column(
-      children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: IconButton(
-            onPressed: _createGroup,
-            icon: Icon(
-              Icons.create_new_folder_outlined,
-              color: palette.foreground,
-              size: AppSizes.iconXl,
-            ),
-            tooltip: '新建分组',
-          ),
-        ),
-        Expanded(
-          child: _loading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                  children: [
-                    if (_groups.isNotEmpty)
-                      SizedBox(
-                        height: AppSizes.chipBar,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.page,
-                          ),
-                          itemCount: _groups.length,
-                          separatorBuilder: (_, _) =>
-                              const SizedBox(width: AppSpacing.gapSm),
-                          itemBuilder: (context, index) {
-                            final group = _groups[index];
-                            final selected = group.id == _activeGroupId;
-                            return ChoiceChip(
-                              label: Text(group.name ?? '未命名'),
-                              selected: selected,
-                              onSelected: (_) async {
-                                setState(() => _activeGroupId = group.id);
-                                if (group.id != null) {
-                                  await _loadTodos(group.id!);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    const SizedBox(height: AppSpacing.gapSm),
-                    Expanded(
-                      child: _groups.isEmpty
-                          ? Center(
-                              child: Text(
-                                '暂无分组，点击右上角新建',
-                                style: TextStyle(
-                                  fontSize: AppTypography.base,
-                                  color: palette.mutedForeground,
-                                ),
+          children: [
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        if (_groups.isNotEmpty)
+                          SizedBox(
+                            height: AppSizes.chipBar,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.page,
                               ),
-                            )
-                          : _loadingTodos
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
+                              itemCount: _groups.length,
+                              separatorBuilder: (_, _) =>
+                                  const SizedBox(width: AppSpacing.gapSm),
+                              itemBuilder: (context, index) {
+                                final group = _groups[index];
+                                final selected = group.id == _activeGroupId;
+                                return ChoiceChip(
+                                  label: Text(group.name ?? '未命名'),
+                                  selected: selected,
+                                  onSelected: (_) async {
+                                    setState(() => _activeGroupId = group.id);
+                                    if (group.id != null) {
+                                      await _loadTodos(group.id!);
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        if (_groups.isNotEmpty)
+                          const SizedBox(height: AppSpacing.gapSm),
+                        Expanded(
+                          child: _groups.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    '暂无分组，点击右上角新建',
+                                    style: TextStyle(
+                                      fontSize: AppTypography.base,
+                                      color: palette.mutedForeground,
+                                    ),
+                                  ),
                                 )
-                              : _todos.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        '暂无待办',
-                                        style: TextStyle(
-                                          fontSize: AppTypography.base,
-                                          color: palette.mutedForeground,
-                                        ),
-                                      ),
+                              : _loadingTodos
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
                                     )
-                                  : ListView.separated(
-                                      padding: const EdgeInsets.all(
-                                        AppSpacing.page,
-                                      ),
-                                      itemCount: _todos.length,
-                                      separatorBuilder: (_, _) =>
-                                          const SizedBox(
-                                        height: AppSpacing.gapSm,
-                                      ),
-                                      itemBuilder: (context, index) {
-                                        final item = _todos[index];
-                                        return Material(
-                                          color: palette.secondary,
-                                          borderRadius: AppRadius.x2lAll,
-                                          child: ListTile(
-                                            leading: Checkbox(
-                                              value: item.done,
-                                              onChanged: (_) =>
-                                                  _toggleTodo(item),
-                                            ),
-                                            title: Text(
-                                              item.title ?? '',
-                                              style: TextStyle(
-                                                fontSize: AppTypography.base,
-                                                decoration: item.done
-                                                    ? TextDecoration
-                                                        .lineThrough
-                                                    : null,
-                                                color: item.done
-                                                    ? palette.mutedForeground
-                                                    : palette.foreground,
-                                              ),
-                                            ),
-                                            trailing: IconButton(
-                                              onPressed: () =>
-                                                  _deleteTodo(item),
-                                              icon: Icon(
-                                                Icons.delete_outline,
-                                                color: palette.mutedForeground,
-                                                size: AppSizes.iconXl,
-                                              ),
+                                  : _todos.isEmpty
+                                      ? Center(
+                                          child: Text(
+                                            '暂无待办',
+                                            style: TextStyle(
+                                              fontSize: AppTypography.base,
+                                              color: palette.mutedForeground,
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
-                    ),
-                    if (_activeGroupId != null)
-                      SafeArea(
-                        top: false,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.page,
-                            AppSpacing.x2,
-                            AppSpacing.page,
-                            AppSpacing.x3,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  controller: _todoController,
-                                  decoration: InputDecoration(
-                                    hintText: '添加待办',
-                                    border: OutlineInputBorder(
-                                      borderRadius: AppRadius.x2lAll,
-                                    ),
-                                    isDense: true,
-                                  ),
-                                  onSubmitted: (_) => _addTodo(),
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.gapSm),
-                              IconButton.filled(
-                                onPressed: _addTodo,
-                                icon: Icon(
-                                  Icons.add,
-                                  size: AppSizes.iconXl,
-                                ),
-                              ),
-                            ],
-                          ),
+                                        )
+                                      : ListView.separated(
+                                          padding: const EdgeInsets.all(
+                                            AppSpacing.page,
+                                          ),
+                                          itemCount: _todos.length,
+                                          separatorBuilder: (_, _) =>
+                                              const SizedBox(
+                                            height: AppSpacing.gapSm,
+                                          ),
+                                          itemBuilder: (context, index) {
+                                            final item = _todos[index];
+                                            return Material(
+                                              color: palette.secondary,
+                                              borderRadius: AppRadius.x2lAll,
+                                              child: ListTile(
+                                                leading: Checkbox(
+                                                  value: item.done,
+                                                  onChanged: (_) =>
+                                                      _toggleTodo(item),
+                                                ),
+                                                title: Text(
+                                                  item.title ?? '',
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        AppTypography.base,
+                                                    decoration: item.done
+                                                        ? TextDecoration
+                                                            .lineThrough
+                                                        : null,
+                                                    color: item.done
+                                                        ? palette
+                                                            .mutedForeground
+                                                        : palette.foreground,
+                                                  ),
+                                                ),
+                                                trailing: IconButton(
+                                                  onPressed: () =>
+                                                      _deleteTodo(item),
+                                                  icon: Icon(
+                                                    Icons.delete_outline,
+                                                    color: palette
+                                                        .mutedForeground,
+                                                    size: AppSizes.iconXl,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
                         ),
-                      ),
-                  ],
-                ),
-        ),
-      ],
+                        if (_activeGroupId != null)
+                          SafeArea(
+                            top: false,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.page,
+                                AppSpacing.x2,
+                                AppSpacing.page,
+                                AppSpacing.x3,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: _todoController,
+                                      decoration: InputDecoration(
+                                        hintText: '添加待办',
+                                        border: OutlineInputBorder(
+                                          borderRadius: AppRadius.x2lAll,
+                                        ),
+                                        isDense: true,
+                                      ),
+                                      onSubmitted: (_) => _addTodo(),
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSpacing.gapSm),
+                                  IconButton.filled(
+                                    onPressed: _addTodo,
+                                    icon: Icon(
+                                      Icons.add,
+                                      size: AppSizes.iconXl,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+            ),
+          ],
         ),
         AssistantPanel(
           api: widget.api,

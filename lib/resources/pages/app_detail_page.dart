@@ -4,6 +4,7 @@ import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/resources/themes/tokens/caibao_palette.dart';
+import 'package:caibao_todo_app/caibao_todo_app.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -35,6 +36,17 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
         title: Text(controller.name.isEmpty ? '应用' : controller.name),
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
+        actions: [
+          if (controller.slug == 'todos')
+            IconButton(
+              tooltip: '新建分组',
+              onPressed: () => TodoAppBarActions.createGroup?.call(),
+              icon: Icon(
+                Icons.create_new_folder_outlined,
+                color: palette.foreground,
+              ),
+            ),
+        ],
       ),
       body: builder != null
           ? builder(context)

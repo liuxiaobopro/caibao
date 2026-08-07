@@ -43,12 +43,14 @@ class ChatComposer extends StatefulWidget {
     this.conversationId,
     this.onSubmit,
     this.enabled = true,
+    this.allowAttachments = true,
   });
 
   final TextEditingController controller;
   final String? conversationId;
   final ChatComposerSubmit? onSubmit;
   final bool enabled;
+  final bool allowAttachments;
 
   @override
   State<ChatComposer> createState() => ChatComposerState();
@@ -83,7 +85,7 @@ class ChatComposerState extends State<ChatComposer> {
   }
 
   Future<void> _pickImages() async {
-    if (!widget.enabled) return;
+    if (!widget.enabled || !widget.allowAttachments) return;
     try {
       final files = await _picker.pickMultiImage(imageQuality: 85);
       if (files.isEmpty) return;
@@ -250,7 +252,9 @@ class ChatComposerState extends State<ChatComposer> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: widget.enabled ? _pickImages : null,
+                  onPressed: widget.enabled && widget.allowAttachments
+                      ? _pickImages
+                      : null,
                   visualDensity: VisualDensity.compact,
                   icon: Icon(
                     Icons.camera_alt_outlined,
@@ -312,7 +316,9 @@ class ChatComposerState extends State<ChatComposer> {
                       );
                     }
                     return IconButton(
-                      onPressed: widget.enabled ? _pickImages : null,
+                      onPressed: widget.enabled && widget.allowAttachments
+                          ? _pickImages
+                          : null,
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.add_circle_outline,
