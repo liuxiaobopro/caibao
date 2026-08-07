@@ -82,3 +82,32 @@ DateTime? _parseDate(dynamic value) {
   if (value == null) return null;
   return DateTime.tryParse(value.toString());
 }
+
+class TodoAssistantHistoryItem {
+  const TodoAssistantHistoryItem({
+    required this.role,
+    required this.content,
+  });
+
+  final String role;
+  final String content;
+
+  Map<String, String> toJson() => {
+        'role': role,
+        'content': content,
+      };
+}
+
+class TodoAssistantEvent {
+  const TodoAssistantEvent({
+    required this.type,
+    this.content,
+    this.msg,
+    this.mutated,
+  });
+
+  final String type;
+  final String? content;
+  final String? msg;
+  final bool? mutated;
+}

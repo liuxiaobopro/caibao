@@ -46,12 +46,30 @@ class ChatStreamClient {
     );
   }
 
+  Future<void> streamTodoAssistant({
+    required String content,
+    required List<Map<String, String>> history,
+    required void Function(ChatSSEEvent event) onEvent,
+    CancelToken? cancelToken,
+  }) {
+    return _streamChat(
+      path: '/todo-assistant/chat',
+      content: content,
+      onEvent: onEvent,
+      history: history,
+      includeThinking: false,
+      cancelToken: cancelToken,
+    );
+  }
+
   Future<void> _streamChat({
     required String path,
     required String content,
     required void Function(ChatSSEEvent event) onEvent,
     List<String>? fileIds,
+    List<Map<String, String>>? history,
     bool enableThinking = false,
+    bool includeThinking = true,
     CancelToken? cancelToken,
   }) async {
     final token = Auth.data(field: 'token')?.toString();
@@ -60,10 +78,15 @@ class ChatStreamClient {
 
     final body = <String, dynamic>{
       'content': content,
-      'enable_thinking': enableThinking,
     };
+    if (includeThinking) {
+      body['enable_thinking'] = enableThinking;
+    }
     if (fileIds != null && fileIds.isNotEmpty) {
       body['file_ids'] = fileIds;
+    }
+    if (history != null) {
+      body['history'] = history;
     }
 
     final headers = <String, dynamic>{

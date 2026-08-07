@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'models.dart';
 import 'todo_api.dart';
+import 'assistant_panel.dart';
 
 class TodoApp extends StatefulWidget {
   const TodoApp({super.key, required this.api});
@@ -141,11 +142,37 @@ class _TodoAppState extends State<TodoApp> {
     }
   }
 
+  Future<void> _refreshAfterAssistant() async {
+    try {
+      final groups = await widget.api.listTodoGroups();
+      if (!mounted) return;
+      final active = _activeGroupId;
+      final stillExists =
+          active != null && groups.any((g) => g.id == active);
+      setState(() {
+        _groups = groups;
+        if (!stillExists) {
+          _activeGroupId = groups.isNotEmpty ? groups.first.id : null;
+        }
+      });
+      final groupId = _activeGroupId;
+      if (groupId != null) {
+        await _loadTodos(groupId);
+      } else {
+        setState(() => _todos = []);
+      }
+    } catch (e) {
+      _showError(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    return Column(
+    return Stack(
+      children: [
+        Column(
       children: [
         Align(
           alignment: Alignment.centerRight,
@@ -303,6 +330,12 @@ class _TodoAppState extends State<TodoApp> {
                       ),
                   ],
                 ),
+        ),
+      ],
+        ),
+        AssistantPanel(
+          api: widget.api,
+          onMutated: _refreshAfterAssistant,
         ),
       ],
     );

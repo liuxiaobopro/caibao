@@ -1,5 +1,7 @@
 import 'models.dart';
 
+typedef TodoStreamCancel = void Function();
+
 abstract class TodoApi {
   Future<List<TodoGroup>> listTodoGroups();
 
@@ -24,4 +26,12 @@ abstract class TodoApi {
   });
 
   Future<void> deleteTodo(String id);
+
+  /// 待办助手 SSE：`POST /todo-assistant/chat`
+  Future<void> streamAssistant({
+    required String content,
+    required List<TodoAssistantHistoryItem> history,
+    required void Function(TodoAssistantEvent event) onEvent,
+    void Function(TodoStreamCancel cancel)? bindCancel,
+  });
 }
