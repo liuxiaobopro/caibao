@@ -38,14 +38,19 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
       isScrollControlled: true,
       backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.x2l)),
       ),
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheet) {
             final bottom = MediaQuery.viewInsetsOf(ctx).bottom;
             return Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottom),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.x4,
+                AppSpacing.x4,
+                AppSpacing.x4,
+                AppSpacing.x4 + bottom,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -53,11 +58,11 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                     Text(
                       editing == null ? '新建模型' : '编辑模型',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: AppTypography.lg,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.x3),
                     TextField(
                       controller: name,
                       decoration: const InputDecoration(labelText: '名称'),
@@ -93,7 +98,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                         if (v != null) setSheet(() => category = v);
                       },
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.x3),
                     FilledButton(
                       onPressed: submitting
                           ? null
@@ -226,7 +231,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                                     ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: AppSpacing.x1_5),
                               Text(
                                 '${item.model ?? ''} · ${item.category?.label ?? ''}',
                                 style: TextStyle(
@@ -243,7 +248,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                                   color: palette.mutedForeground,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: AppSpacing.x2),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [

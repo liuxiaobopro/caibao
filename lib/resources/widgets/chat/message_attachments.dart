@@ -4,7 +4,9 @@ import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 
 class MessageAttachments extends StatelessWidget {
   const MessageAttachments({
@@ -38,12 +40,12 @@ class MessageAttachments extends StatelessWidget {
                 color: onUserBubble
                     ? palette.brandOn.withValues(alpha: 0.15)
                     : palette.secondary,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
+                borderRadius: AppRadius.smAll,
               ),
               child: Text(
                 file.name ?? '文件',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: AppTypography.xs,
                   color: onUserBubble
                       ? palette.onUserBubble
                       : palette.foreground,
@@ -95,7 +97,7 @@ class _ImageThumb extends StatelessWidget {
                 context: context,
                 builder: (ctx) => Dialog(
                   backgroundColor: Colors.transparent,
-                  insetPadding: const EdgeInsets.all(16),
+                  insetPadding: const EdgeInsets.all(AppSpacing.x4),
                   child: InteractiveViewer(
                     child: isLocal
                         ? Image.file(File(url))
@@ -105,8 +107,8 @@ class _ImageThumb extends StatelessWidget {
               );
             },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-        child: SizedBox(width: 120, height: 120, child: image),
+        borderRadius: AppRadius.smAll,
+        child: SizedBox(width: AppSizes.previewThumb, height: AppSizes.previewThumb, child: image),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:caibao/bootstrap/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:nylo_framework/theme/helper/ny_theme.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 
 class ThemeToggle extends StatelessWidget {
   const ThemeToggle({super.key});
@@ -14,7 +15,7 @@ class ThemeToggle extends StatelessWidget {
     if (context.isDeviceInDarkMode) {
       return Container(
         width: double.infinity,
-        margin: EdgeInsets.only(top: 8),
+        margin: EdgeInsets.only(top: AppSpacing.x2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,

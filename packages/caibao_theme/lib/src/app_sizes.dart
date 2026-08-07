@@ -25,4 +25,19 @@ abstract final class AppSizes {
 
   static const double chipBar = 44;
   static const double scrollbar = 8;
+
+  /// Image / empty-state preview square.
+  static const double previewThumb = 120;
+
+  /// FAB / floating panel offset from safe area.
+  static const double floatInset = 120;
+
+  static const double panelWidth = 360;
+  static const double panelMinHeight = 280;
+  static const double panelMaxHeight = 480;
+
+  static const double toastHeight = 96;
+  static const double toastIconSlot = 48;
+  static const double logoBadge = 70;
+  static const double logoMark = 36;
 }

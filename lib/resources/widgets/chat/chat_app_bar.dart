@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   const ChatAppBar({
@@ -47,7 +48,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: AppTypography.lg,
                       fontWeight: FontWeight.w700,
                       color: palette.foreground,
                       height: 1.2,
@@ -68,7 +69,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
           Text(
             'AI 生成可能有误 注意核实',
             style: TextStyle(
-              fontSize: 11,
+              fontSize: AppTypography.xs,
               color: palette.mutedForeground,
               height: 1.2,
               fontWeight: FontWeight.w400,

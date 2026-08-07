@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class TextOnlyButton extends StatefulAppButton {
   final Color? contentColor;
@@ -34,7 +35,7 @@ class TextOnlyButton extends StatefulAppButton {
         text,
         style: TextStyle(
           color: fgColor,
-          fontSize: 15,
+          fontSize: AppTypography.base,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.1,
           decoration: underline ? TextDecoration.underline : null,

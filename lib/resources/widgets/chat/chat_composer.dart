@@ -7,6 +7,7 @@ import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -230,7 +231,8 @@ class ChatComposerState extends State<ChatComposer> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: _attachments.length,
-                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) =>
+                    const SizedBox(width: AppSpacing.x2),
                 itemBuilder: (context, index) {
                   final item = _attachments[index];
                   return _AttachmentChip(
@@ -270,7 +272,7 @@ class ChatComposerState extends State<ChatComposer> {
                     onChanged: (_) => setState(() {}),
                     enabled: widget.enabled && widget.onSubmit != null,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: AppTypography.base,
                       color: palette.foreground,
                       fontWeight: FontWeight.w400,
                       height: 1.35,
@@ -279,7 +281,7 @@ class ChatComposerState extends State<ChatComposer> {
                       isDense: true,
                       hintText: '发消息或按住说话',
                       hintStyle: TextStyle(
-                        fontSize: 15,
+                        fontSize: AppTypography.base,
                         color: palette.mutedForeground,
                         fontWeight: FontWeight.w400,
                       ),
@@ -323,7 +325,7 @@ class ChatComposerState extends State<ChatComposer> {
                       icon: Icon(
                         Icons.add_circle_outline,
                         color: palette.foreground,
-                        size: 24,
+                        size: AppSizes.iconXl,
                       ),
                     );
                   },
@@ -356,7 +358,7 @@ class _AttachmentChip extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.sm),
+          borderRadius: AppRadius.smAll,
           child: SizedBox(
             width: 64,
             height: 64,
@@ -387,7 +389,7 @@ class _AttachmentChip extends StatelessWidget {
                         icon: Icon(
                           Icons.refresh_rounded,
                           color: palette.brandOn,
-                          size: 20,
+                          size: AppSizes.iconLg,
                         ),
                       ),
                     ),
@@ -397,21 +399,21 @@ class _AttachmentChip extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: -6,
-          right: -6,
+          top: -AppSpacing.x1_5,
+          right: -AppSpacing.x1_5,
           child: InkWell(
             onTap: onRemove,
             customBorder: const CircleBorder(),
             child: Container(
-              width: 20,
-              height: 20,
+              width: AppSizes.iconLg,
+              height: AppSizes.iconLg,
               decoration: BoxDecoration(
                 color: palette.foreground,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.close_rounded,
-                size: 12,
+                size: AppSizes.iconXs,
                 color: palette.background,
               ),
             ),

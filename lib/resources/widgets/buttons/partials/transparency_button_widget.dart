@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
 import 'package:flutter/material.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class TransparencyButton extends StatefulAppButton {
   final Color? contentColor;
@@ -33,7 +35,7 @@ class TransparencyButton extends StatefulAppButton {
     final Color bgColor = isDark
         ? palette.brandOn.withValues(alpha: 0.12)
         : palette.foreground.withValues(alpha: 0.05);
-    final BorderRadius radius = BorderRadius.circular(12);
+    final BorderRadius radius = AppRadius.xlAll;
 
     return ClipRRect(
       borderRadius: radius,
@@ -57,7 +59,7 @@ class TransparencyButton extends StatefulAppButton {
             text,
             style: TextStyle(
               color: fgColor,
-              fontSize: 15,
+              fontSize: AppTypography.base,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.1,
             ),

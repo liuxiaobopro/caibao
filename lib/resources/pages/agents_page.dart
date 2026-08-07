@@ -37,14 +37,19 @@ class _AgentsPageState extends NyPage<AgentsPage> {
       isScrollControlled: true,
       backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.x2l)),
       ),
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
             final bottom = MediaQuery.viewInsetsOf(ctx).bottom;
             return Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottom),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.x4,
+                AppSpacing.x4,
+                AppSpacing.x4,
+                AppSpacing.x4 + bottom,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -52,28 +57,28 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                   Text(
                     editing == null ? '新建智能体' : '编辑智能体',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: AppTypography.lg,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.x3),
                   TextField(
                     controller: nameCtrl,
                     decoration: const InputDecoration(labelText: '名称'),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.x2),
                   TextField(
                     controller: descCtrl,
                     decoration: const InputDecoration(labelText: '描述'),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.x2),
                   TextField(
                     controller: instrCtrl,
                     minLines: 3,
                     maxLines: 6,
                     decoration: const InputDecoration(labelText: '指令'),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.x4),
                   FilledButton(
                     onPressed: submitting
                         ? null
@@ -211,8 +216,8 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                                           ),
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
+                                              horizontal: AppSpacing.x2,
+                                              vertical: AppSpacing.x0_5,
                                             ),
                                             decoration: BoxDecoration(
                                               color: palette.muted,
@@ -228,7 +233,7 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: AppSpacing.x2),
                                       Text(
                                         (agent.description?.isNotEmpty == true)
                                             ? agent.description!
@@ -241,7 +246,7 @@ class _AgentsPageState extends NyPage<AgentsPage> {
                                         ),
                                       ),
                                       if (agent.isUser) ...[
-                                        const SizedBox(height: 12),
+                                        const SizedBox(height: AppSpacing.x3),
                                         Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.end,

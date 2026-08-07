@@ -81,7 +81,7 @@ class _AppsPageState extends NyPage<AppsPage> {
                                     color: palette.foreground,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.x1),
                                 Text(
                                   app.description,
                                   maxLines: 2,

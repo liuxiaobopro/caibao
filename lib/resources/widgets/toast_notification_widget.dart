@@ -1,6 +1,9 @@
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 
 /// ToastNotification provides a registry of toast notification styles.
 /// Use [ToastNotification.styles] to get the default styles map.
@@ -14,7 +17,7 @@ class ToastNotification {
   /// ```dart
   /// 'custom': (data) => ToastNotification.builder((context) {
   ///   return Container(
-  ///     padding: EdgeInsets.all(16),
+  ///     padding: EdgeInsets.all(AppSpacing.x4),
   ///     child: Text(data['description'] ?? ''),
   ///   );
   /// }, animation: ToastAnimation.springFromTop()),
@@ -137,14 +140,14 @@ class _ToastNotificationBase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.x3, horizontal: AppSpacing.x2),
       child: Material(
         color: Colors.transparent,
         child: Container(
-          height: 95,
+          height: AppSizes.toastHeight,
           decoration: BoxDecoration(
             color: context.color.general.background,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.x2lAll,
             boxShadow: context.isThemeDark
                 ? null
                 : <BoxShadow>[
@@ -160,15 +163,15 @@ class _ToastNotificationBase extends StatelessWidget {
             onTap: _toastMeta.action != null
                 ? () => _toastMeta.action!()
                 : null,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.x2lAll,
             child: Row(
               children: <Widget>[
                 // Icon section
-                SizedBox(width: 50, child: Center(child: _toastMeta.icon)),
+                SizedBox(width: AppSizes.toastIconSlot, child: Center(child: _toastMeta.icon)),
                 // Content section
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x3),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,14 +194,14 @@ class _ToastNotificationBase extends StatelessWidget {
                 ),
                 // Dismiss button
                 Padding(
-                  padding: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.only(right: AppSpacing.x2),
                   child: IconButton(
                     onPressed: _toastMeta.dismiss != null
                         ? () => _toastMeta.dismiss!()
                         : null,
                     icon: Icon(
                       Icons.close,
-                      size: 18,
+                      size: AppSizes.iconLg,
                       color: context.palette.mutedForeground,
                     ),
                   ),

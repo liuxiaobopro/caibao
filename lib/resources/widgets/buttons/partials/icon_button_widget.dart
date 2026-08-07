@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class IconButton extends StatefulAppButton {
   final Widget icon;
@@ -34,7 +36,7 @@ class IconButton extends StatefulAppButton {
 
     final Color bgColor = backgroundColor ?? theme.colorScheme.primary;
     final Color fgColor = contentColor ?? theme.colorScheme.onPrimary;
-    final BorderRadius radius = BorderRadius.circular(14);
+    final BorderRadius radius = AppRadius.xlAll;
 
     final IconTheme iconWidget = IconTheme(
       data: IconThemeData(color: fgColor, size: 20),
@@ -67,7 +69,7 @@ class IconButton extends StatefulAppButton {
             text,
             style: TextStyle(
               color: fgColor,
-              fontSize: 16,
+              fontSize: AppTypography.base,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.3,
             ),

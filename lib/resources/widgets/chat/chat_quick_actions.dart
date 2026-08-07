@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class ChatQuickAction {
   const ChatQuickAction({required this.icon, required this.label});
@@ -26,7 +28,7 @@ class ChatQuickActions extends StatelessWidget {
     return ColoredBox(
       color: palette.card,
       child: SizedBox(
-        height: 40 + AppSpacing.x3,
+        height: AppSizes.buttonLg + AppSpacing.x3,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.fromLTRB(
@@ -46,8 +48,8 @@ class ChatQuickActions extends StatelessWidget {
                 borderRadius: AppRadius.fullAll,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
+                    horizontal: AppSpacing.x3_5,
+                    vertical: AppSpacing.x2,
                   ),
                   decoration: BoxDecoration(
                     color: palette.card,
@@ -62,11 +64,11 @@ class ChatQuickActions extends StatelessWidget {
                         size: 15,
                         color: palette.foreground,
                       ),
-                      const SizedBox(width: 5),
+                      const SizedBox(width: AppSpacing.x1),
                       Text(
                         action.label,
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: AppTypography.sm,
                           color: palette.foreground,
                           fontWeight: FontWeight.w500,
                           height: 1.2,

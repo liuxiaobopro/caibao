@@ -68,7 +68,7 @@ class _NotificationBellState extends State<NotificationBell>
       isScrollControlled: true,
       backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.x2l)),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -180,7 +180,12 @@ class _NotificationBellState extends State<NotificationBell>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.x4,
+                        AppSpacing.x3,
+                        AppSpacing.x2,
+                        AppSpacing.x2,
+                      ),
                       child: Row(
                         children: [
                           Text(
@@ -273,7 +278,7 @@ class _NotificationBellState extends State<NotificationBell>
         textColor: palette.brandOn,
         label: Text(
           badgeText,
-          style: const TextStyle(fontSize: 10, height: 1),
+          style: const TextStyle(fontSize: AppTypography.xs, height: 1),
         ),
         child: Icon(
           Icons.notifications_none_rounded,
@@ -309,10 +314,10 @@ class _NotificationTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: AppSpacing.x1_5),
               child: Container(
-                width: 6,
-                height: 6,
+                width: AppSpacing.x1_5,
+                height: AppSpacing.x1_5,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: item.read ? Colors.transparent : palette.brand,
@@ -340,20 +345,20 @@ class _NotificationTile extends StatelessWidget {
                         ),
                       ),
                       if (item.isBroadcast) ...[
-                        const SizedBox(width: 6),
+                        const SizedBox(width: AppSpacing.x1_5),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
+                            horizontal: AppSpacing.x1,
                             vertical: 1,
                           ),
                           decoration: BoxDecoration(
                             color: palette.secondary,
-                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                            borderRadius: AppRadius.smAll,
                           ),
                           child: Text(
                             '广播',
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: AppTypography.xs,
                               color: palette.secondaryForeground,
                             ),
                           ),
@@ -362,7 +367,7 @@ class _NotificationTile extends StatelessWidget {
                     ],
                   ),
                   if (item.content != null && item.content!.isNotEmpty) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.x0_5),
                     Text(
                       item.content!,
                       maxLines: 2,
@@ -374,11 +379,11 @@ class _NotificationTile extends StatelessWidget {
                     ),
                   ],
                   if (item.createdAt != null) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: AppSpacing.x0_5),
                     Text(
                       _formatTime(item.createdAt!),
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: AppTypography.xs,
                         color: palette.mutedForeground.withValues(alpha: 0.8),
                       ),
                     ),

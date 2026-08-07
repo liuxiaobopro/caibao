@@ -3,8 +3,10 @@ import 'package:caibao/app/utils/theme_preference.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/pages/llm_models_page.dart';
 import 'package:caibao/resources/pages/storage_configs_page.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -33,7 +35,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
       context: context,
       backgroundColor: palette.card,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.x2l)),
       ),
       builder: (ctx) {
         return SafeArea(
@@ -121,7 +123,12 @@ class _ProfilePageState extends NyPage<ProfilePage> {
       body: controller.loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.x4,
+                AppSpacing.x1,
+                AppSpacing.x4,
+                AppSpacing.x8,
+              ),
               children: [
                 Column(
                   children: [
@@ -146,14 +153,14 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                             : Text(
                                 initial,
                                 style: TextStyle(
-                                  fontSize: 32,
+                                  fontSize: AppTypography.x4l,
                                   fontWeight: FontWeight.w700,
                                   color: palette.brandDark,
                                 ),
                               ),
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: AppSpacing.x3_5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
@@ -161,7 +168,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                         Text(
                           nickname,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: AppTypography.x2l,
                             fontWeight: FontWeight.w700,
                             color: palette.foreground,
                             letterSpacing: -0.3,
@@ -175,32 +182,32 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                       ],
                     ),
                     if (user?.caibaoId.isNotEmpty == true) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.x1),
                       Text(
                         '菜包号: ${user!.caibaoId}',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: AppTypography.sm,
                           color: palette.mutedForeground,
                           fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 14),
+                    const SizedBox(height: AppSpacing.x3_5),
                     Material(
                       color: palette.secondary,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: AppRadius.x3lAll,
                       child: InkWell(
                         onTap: () {},
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: AppRadius.x3lAll,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
+                            horizontal: AppSpacing.x5,
+                            vertical: AppSpacing.x2_5,
                           ),
                           child: Text(
                             '菜包账号管理',
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: AppTypography.sm,
                               fontWeight: FontWeight.w700,
                               color: palette.foreground,
                             ),
@@ -210,7 +217,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: AppSpacing.x7),
                 _MenuCard(
                   children: [
                     _MenuTile(
@@ -235,7 +242,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.x3),
                 _MenuCard(
                   children: [
                     _MenuTile(
@@ -265,7 +272,7 @@ class _MenuCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: palette.card,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.x3lAll,
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(children: children),
@@ -300,7 +307,7 @@ class _MenuTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final labelStyle = TextStyle(
-      fontSize: 16,
+      fontSize: AppTypography.base,
       fontWeight: FontWeight.w600,
       color: danger ? palette.danger : palette.foreground,
     );
@@ -312,7 +319,7 @@ class _MenuTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.x4,
-              vertical: 14,
+              vertical: AppSpacing.x3_5,
             ),
             child: center
                 ? SizedBox(
@@ -331,7 +338,7 @@ class _MenuTile extends StatelessWidget {
                           height: 34,
                           decoration: BoxDecoration(
                             color: iconBg ?? palette.brand,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.mdAll,
                           ),
                           child: Icon(
                             icon,
@@ -339,19 +346,19 @@ class _MenuTile extends StatelessWidget {
                             color: palette.onAccentIcon,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.x3),
                       ],
                       Expanded(child: Text(label, style: labelStyle)),
                       if (trailingText != null) ...[
                         Text(
                           trailingText!,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: AppTypography.sm,
                             color: palette.mutedForeground,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        const SizedBox(width: 2),
+                        const SizedBox(width: AppSpacing.x0_5),
                       ],
                       if (showChevron)
                         Icon(

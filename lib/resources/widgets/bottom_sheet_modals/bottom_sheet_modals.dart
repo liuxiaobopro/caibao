@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'modals/logout_modal.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import '../buttons/buttons.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 
 /// BottomSheetModal
 ///
@@ -38,7 +39,7 @@ class BottomSheetModal extends NyBaseModal {
             }
           },
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.x2),
         Button.textOnly(
           text: "Cancel",
           onPressed: () {

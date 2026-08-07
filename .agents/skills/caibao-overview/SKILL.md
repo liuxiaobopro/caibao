@@ -13,7 +13,7 @@ Nylo 通用能力见 [nylo-overview](../nylo-overview/SKILL.md)。
 
 1. **新页面必须 Metro**：`metro make:page xxx_page`，禁止手写脚手架（见 README）
 2. **图片/资源用 Nylo**：`LocalAsset.image` / `getImageAsset` / `getAsset`，禁止 `Image.asset('assets/...')`
-3. **样式用 theme tokens**：`context.palette` / `context.tokens`（`caibao_theme` 或 `resources/themes/tokens` 再导出）
+3. **禁止主题硬编码**（主应用 `lib/resources/**` + `packages/*_app/**` 一律适用，见下方「主题」）
 4. **业务 API 走 `ApiService`**：`api<ApiService>((r) => r.xxx())`；信封 `{code, data, msg}`，`code != 0` → `ApiException`
 5. **需登录路由挂 `AuthRouteGuard`**；主会话页用 `.authenticatedRoute()`
 6. **import 用 `package:caibao/...`**；workspace 包：`caibao_theme` / `caibao_hello_app` / `caibao_todo_app`
@@ -116,15 +116,43 @@ await Auth.logout();
 
 ## 主题
 
-源：`packages/caibao_theme`。主应用经 `lib/resources/themes/tokens/` re-export。
+源：`packages/caibao_theme`。主应用经 `lib/resources/themes/tokens/` re-export；小应用 `import 'package:caibao_theme/caibao_theme.dart'`。
 
 ```dart
-context.palette
-context.tokens
-// spacing / radius / typography / sizes / shadows / CaibaoPalette
+final palette = context.palette;
+final tokens = context.tokens;
+
+padding: EdgeInsets.all(AppSpacing.x4)
+borderRadius: AppRadius.x2lAll
+fontSize: AppTypography.sm
+size: AppSizes.iconLg
+color: palette.foreground // / brand / mutedForeground / userBubble …
+boxShadow: tokens.panelShadow // 或 AppShadows.*
 ```
 
-小应用直接 `import 'package:caibao_theme/caibao_theme.dart'`。
+### 禁止（硬编码）
+
+| 类型 | 禁止写法 | 必须用 |
+|------|----------|--------|
+| 间距 | `EdgeInsets.all(16)` / `symmetric(horizontal: 12)` / `SizedBox(height: 8)` | `AppSpacing.*` |
+| 圆角 | `BorderRadius.circular(14)` / `Radius.circular(16)` | `AppRadius.*` / `*All` |
+| 字号 | `fontSize: 15` / `17` / `TextStyle(fontSize: 13)` | `AppTypography.*` |
+| 尺寸 | icon/avatar/button 字面量宽高 | `AppSizes.*` |
+| 颜色 | `Colors.grey` / `Colors.blue` / `Color(0xFF…)` / `Colors.black26` | `context.palette` / `CaibaoPalette` |
+| 阴影 | 自拼 `BoxShadow` / `Colors.black26` elevation | `AppShadows.*` / `tokens.panelShadow` |
+
+**例外（仅这些可保留字面量）：**
+
+- `Colors.transparent`（AppBar `surfaceTintColor` 等）
+- `Divider(height: 1)` / 1px 分割与微间距
+- 动画 `Duration` / 曲线
+- 布局约束里与 token 无关的媒体查询计算（仍优先用 spacing 参与运算）
+- `lib/resources/themes/**` 与 `packages/caibao_theme/**` 内的 token **定义本身**
+- Nylo 模板页 `home_page.dart`（非主流程，可不改）
+
+缺 token 时：**先补 `packages/caibao_theme`**，再在业务里引用；禁止为图省事写魔法数字。
+
+映射就近：`11→xs(12)`、`13→sm(14)`、`15→base(16)`、`17→lg(18)`；圆角 `12→lg(10)或xl(14)`、`16→xl`、`18→x2l`、`20→x3l`。
 
 ## 小应用（Mini-app）
 
@@ -141,7 +169,8 @@ context.tokens
 - [ ] `router.dart` 加路由 + 守卫
 - [ ] `decoders.dart` 注册 controller / model
 - [ ] API 写在 `ApiService`（或 SSE client）
-- [ ] UI 用 `context.palette` / tokens；图片用 LocalAsset
+- [ ] UI：**禁止主题硬编码**；用 `context.palette` / `AppSpacing` / `AppRadius` / `AppTypography` / `AppSizes`；图片用 LocalAsset
+- [ ] 小应用同步遵守 caibao_theme，缺 token 先补 `packages/caibao_theme`
 - [ ] 错误：`showToastSorry` + `ApiException` 中文文案
 
 ## Additional resources

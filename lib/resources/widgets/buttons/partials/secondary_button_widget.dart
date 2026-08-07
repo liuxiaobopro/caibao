@@ -1,6 +1,8 @@
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
 import 'package:flutter/material.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class SecondaryButton extends StatefulAppButton {
   final Color? backgroundColor;
@@ -29,7 +31,7 @@ class SecondaryButton extends StatefulAppButton {
 
     final Color bgColor = backgroundColor ?? palette.secondary;
     final Color fgColor = contentColor ?? palette.secondaryForeground;
-    final BorderRadius radius = BorderRadius.circular(14);
+    final BorderRadius radius = AppRadius.xlAll;
 
     return Container(
       width: width ?? double.infinity,
@@ -52,7 +54,7 @@ class SecondaryButton extends StatefulAppButton {
           text,
           style: TextStyle(
             color: fgColor,
-            fontSize: 16,
+            fontSize: AppTypography.base,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.2,
           ),

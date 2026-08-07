@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:caibao/resources/widgets/buttons/abstract/app_button.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 
 class RoundedButton extends StatefulAppButton {
   final Color? contentColor;
@@ -50,12 +52,12 @@ class RoundedButton extends StatefulAppButton {
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.x6),
           child: Text(
             text,
             style: TextStyle(
               color: fgColor,
-              fontSize: 15,
+              fontSize: AppTypography.base,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.2,
             ),

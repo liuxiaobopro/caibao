@@ -160,12 +160,16 @@ class _AssistantPanelState extends State<AssistantPanel> {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final size = MediaQuery.sizeOf(context);
-    final panelW = size.width < 400 ? size.width - 32 : 360.0;
-    final panelH = (size.height - 120).clamp(280.0, 480.0);
+    final panelW =
+        size.width < 400 ? size.width - AppSpacing.x8 : AppSizes.panelWidth;
+    final panelH = (size.height - AppSizes.floatInset).clamp(
+      AppSizes.panelMinHeight,
+      AppSizes.panelMaxHeight,
+    );
 
     return Positioned(
-      right: 18,
-      bottom: 18,
+      right: AppSpacing.x5,
+      bottom: AppSpacing.x5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
@@ -174,8 +178,8 @@ class _AssistantPanelState extends State<AssistantPanel> {
             Material(
               color: palette.card,
               elevation: 8,
-              shadowColor: Colors.black26,
-              borderRadius: BorderRadius.circular(14),
+              shadowColor: AppShadows.softColor,
+              borderRadius: AppRadius.xlAll,
               clipBehavior: Clip.antiAlias,
               child: SizedBox(
                 width: panelW,
@@ -183,7 +187,12 @@ class _AssistantPanelState extends State<AssistantPanel> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 14, 6, 10),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.x3_5,
+                        AppSpacing.x3_5,
+                        AppSpacing.x1_5,
+                        AppSpacing.x2_5,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -199,7 +208,7 @@ class _AssistantPanelState extends State<AssistantPanel> {
                                     color: palette.foreground,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: AppSpacing.x0_5),
                                 Text(
                                   '用对话增删改查分组与待办',
                                   style: TextStyle(
@@ -215,7 +224,7 @@ class _AssistantPanelState extends State<AssistantPanel> {
                             icon: Icon(
                               Icons.close,
                               color: palette.mutedForeground,
-                              size: 20,
+                              size: AppSizes.iconLg,
                             ),
                             tooltip: '关闭助手',
                           ),
@@ -227,7 +236,7 @@ class _AssistantPanelState extends State<AssistantPanel> {
                       child: _messages.isEmpty
                           ? Center(
                               child: Padding(
-                                padding: const EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(AppSpacing.x4),
                                 child: Text(
                                   '试试：「在买菜分组加一条番茄」或「列出所有分组」',
                                   textAlign: TextAlign.center,
@@ -241,7 +250,7 @@ class _AssistantPanelState extends State<AssistantPanel> {
                             )
                           : ListView.builder(
                               controller: _scroll,
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(AppSpacing.x3),
                               itemCount: _messages.length,
                               itemBuilder: (context, index) {
                                 final m = _messages[index];
@@ -251,19 +260,21 @@ class _AssistantPanelState extends State<AssistantPanel> {
                                       ? Alignment.centerRight
                                       : Alignment.centerLeft,
                                   child: Container(
-                                    margin: const EdgeInsets.only(bottom: 10),
+                                    margin: const EdgeInsets.only(
+                                      bottom: AppSpacing.x2_5,
+                                    ),
                                     constraints: BoxConstraints(
                                       maxWidth: panelW * 0.92,
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 10,
+                                      horizontal: AppSpacing.x3,
+                                      vertical: AppSpacing.x2_5,
                                     ),
                                     decoration: BoxDecoration(
                                       color: isUser
                                           ? palette.brandContainer
                                           : palette.assistantBubble,
-                                      borderRadius: BorderRadius.circular(14),
+                                      borderRadius: AppRadius.xlAll,
                                       border: Border.all(
                                         color: isUser
                                             ? palette.brand.withValues(
@@ -309,13 +320,18 @@ class _AssistantPanelState extends State<AssistantPanel> {
                     ),
                     if (_error.isNotEmpty)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.x3,
+                          0,
+                          AppSpacing.x3,
+                          AppSpacing.x2,
+                        ),
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(AppSpacing.x2_5),
                           decoration: BoxDecoration(
                             color: palette.danger.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: AppRadius.lgAll,
                             border: Border.all(
                               color: palette.danger.withValues(alpha: 0.4),
                             ),
@@ -331,7 +347,12 @@ class _AssistantPanelState extends State<AssistantPanel> {
                       ),
                     Divider(height: 1, color: palette.muted),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.x3,
+                        AppSpacing.x2_5,
+                        AppSpacing.x3,
+                        AppSpacing.x3,
+                      ),
                       child: Row(
                         children: [
                           Expanded(
@@ -344,14 +365,14 @@ class _AssistantPanelState extends State<AssistantPanel> {
                                 counterText: '',
                                 isDense: true,
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: AppRadius.lgAll,
                                 ),
                               ),
                               onChanged: (_) => setState(() {}),
                               onSubmitted: (_) => _submit(),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.x2),
                           FilledButton(
                             onPressed: _streaming ||
                                     _input.text.trim().isEmpty
@@ -360,14 +381,17 @@ class _AssistantPanelState extends State<AssistantPanel> {
                             style: FilledButton.styleFrom(
                               backgroundColor: palette.brand,
                               foregroundColor: palette.brandOn,
-                              minimumSize: const Size(64, 42),
+                              minimumSize: const Size(
+                                AppSpacing.x16,
+                                AppSizes.buttonLg,
+                              ),
                             ),
                             child: _streaming
                                 ? SizedBox(
-                                    width: 18,
-                                    height: 18,
+                                    width: AppSpacing.x5,
+                                    height: AppSpacing.x5,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                                      strokeWidth: AppSpacing.x0_5,
                                       color: palette.brandOn,
                                     ),
                                   )
@@ -380,14 +404,14 @@ class _AssistantPanelState extends State<AssistantPanel> {
                 ),
               ),
             ),
-          if (_open) const SizedBox(height: 12),
+          if (_open) const SizedBox(height: AppSpacing.x3),
           if (!_open)
             FloatingActionButton(
               onPressed: () => setState(() => _open = true),
               backgroundColor: palette.brand,
               foregroundColor: palette.brandOn,
               tooltip: '打开助手',
-              child: const Icon(Icons.smart_toy_outlined, size: 26),
+              child: const Icon(Icons.smart_toy_outlined, size: AppSizes.iconXl),
             ),
         ],
       ),

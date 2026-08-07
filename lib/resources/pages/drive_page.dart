@@ -157,7 +157,7 @@ class _DrivePageState extends NyPage<DrivePage> {
                                           color: palette.foreground,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: AppSpacing.x1),
                                       Text(
                                         '${formatDriveFileSize(file.size)} · ${formatDriveFileTime(file.createdAt)}'
                                         '${file.source != null ? ' · ${file.source}' : ''}',

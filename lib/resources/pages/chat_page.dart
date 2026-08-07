@@ -1,6 +1,8 @@
 import 'package:caibao/app/controllers/chat_controller.dart';
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
@@ -204,8 +206,8 @@ class _ChatPageState extends NyPage<ChatPage> {
                                         bottom: AppSpacing.x4,
                                       ),
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 12,
+                                        horizontal: AppSpacing.x4,
+                                        vertical: AppSpacing.x3,
                                       ),
                                       constraints: BoxConstraints(
                                         maxWidth:
@@ -215,10 +217,10 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       decoration: BoxDecoration(
                                         color: palette.userBubble,
                                         borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(18),
-                                          topRight: Radius.circular(18),
-                                          bottomLeft: Radius.circular(18),
-                                          bottomRight: Radius.circular(6),
+                                          topLeft: Radius.circular(AppRadius.x2l),
+                                          topRight: Radius.circular(AppRadius.x2l),
+                                          bottomLeft: Radius.circular(AppRadius.x2l),
+                                          bottomRight: Radius.circular(AppRadius.sm),
                                         ),
                                       ),
                                       child: Column(
@@ -232,12 +234,12 @@ class _ChatPageState extends NyPage<ChatPage> {
                                             ),
                                           if (message.attachments.isNotEmpty &&
                                               showText)
-                                            const SizedBox(height: 8),
+                                            const SizedBox(height: AppSpacing.x2),
                                           if (showText)
                                             Text(
                                               content,
                                               style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: AppTypography.base,
                                                 color: palette.onUserBubble,
                                                 fontWeight: FontWeight.w400,
                                                 height: 1.45,
@@ -256,8 +258,8 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       bottom: AppSpacing.x4,
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                      vertical: 4,
+                                      horizontal: AppSpacing.x1,
+                                      vertical: AppSpacing.x1,
                                     ),
                                     constraints: BoxConstraints(
                                       maxWidth:
@@ -273,7 +275,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                                             attachments: message.attachments,
                                           ),
                                           if (content.isNotEmpty)
-                                            const SizedBox(height: 8),
+                                            const SizedBox(height: AppSpacing.x2),
                                         ],
                                         AssistantMessageBody(
                                           content: content,
@@ -288,7 +290,7 @@ class _ChatPageState extends NyPage<ChatPage> {
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 8,
+                      bottom: AppSpacing.x2,
                       child: Center(
                         child: Material(
                           color: palette.card,
@@ -299,8 +301,8 @@ class _ChatPageState extends NyPage<ChatPage> {
                             customBorder: const CircleBorder(),
                             onTap: _scrollToBottom,
                             child: SizedBox(
-                              width: 36,
-                              height: 36,
+                              width: AppSizes.iconButtonMd,
+                              height: AppSizes.iconButtonMd,
                               child: Icon(
                                 Icons.keyboard_arrow_down_rounded,
                                 color: palette.foreground,

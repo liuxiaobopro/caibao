@@ -1,4 +1,7 @@
 import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
+import 'package:caibao/resources/themes/tokens/app_sizes.dart';
+import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/widgets/local_asset_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -13,21 +16,25 @@ class LogoutModal extends StatelessWidget {
     return Column(
       children: <Widget>[
         Container(
-          height: 70,
-          width: 70,
+          height: AppSizes.logoBadge,
+          width: AppSizes.logoBadge,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: palette.secondary,
-            borderRadius: BorderRadius.circular(40),
+            borderRadius: AppRadius.fullAll,
           ),
-          child: LocalAsset.image("logo.png", height: 35, width: 35),
+          child: LocalAsset.image(
+            "logo.png",
+            height: AppSizes.logoMark,
+            width: AppSizes.logoMark,
+          ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.x2),
         TextTr(
           "Are you sure you want to logout of your account?",
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.x4),
       ],
     );
   }

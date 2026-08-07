@@ -37,7 +37,7 @@ class MessageCardView extends StatelessWidget {
             child: Container(
               constraints: const BoxConstraints(maxWidth: 448),
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.x3 + 2,
+                horizontal: AppSpacing.x3_5,
                 vertical: AppSpacing.x3,
               ),
               decoration: BoxDecoration(
@@ -80,7 +80,7 @@ class MessageCardView extends StatelessWidget {
                             color: palette.foreground,
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        const SizedBox(height: AppSpacing.x0_5),
                         Text(
                           '${agent.message ?? '智能体创建成功'} · 点击开始对话',
                           maxLines: 1,
@@ -110,7 +110,7 @@ class MessageCardView extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: AppSpacing.x3),
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.x3 + 2,
+          horizontal: AppSpacing.x3_5,
           vertical: AppSpacing.x3,
         ),
         decoration: BoxDecoration(

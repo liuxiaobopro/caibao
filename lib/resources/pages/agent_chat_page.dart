@@ -1,7 +1,9 @@
 import 'package:caibao/app/controllers/agent_chat_controller.dart';
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/bootstrap/extensions.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
+import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/resources/widgets/chat/assistant_message_body.dart';
 import 'package:caibao/resources/widgets/chat/chat_composer.dart';
 import 'package:flutter/material.dart';
@@ -102,8 +104,8 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                     bottom: AppSpacing.x4,
                                   ),
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 12,
+                                    horizontal: AppSpacing.x4,
+                                    vertical: AppSpacing.x3,
                                   ),
                                   constraints: BoxConstraints(
                                     maxWidth:
@@ -112,16 +114,16 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                   decoration: BoxDecoration(
                                     color: palette.userBubble,
                                     borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(18),
-                                      topRight: Radius.circular(18),
-                                      bottomLeft: Radius.circular(18),
-                                      bottomRight: Radius.circular(6),
+                                      topLeft: Radius.circular(AppRadius.x2l),
+                                      topRight: Radius.circular(AppRadius.x2l),
+                                      bottomLeft: Radius.circular(AppRadius.x2l),
+                                      bottomRight: Radius.circular(AppRadius.sm),
                                     ),
                                   ),
                                   child: Text(
                                     content,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: AppTypography.base,
                                       color: palette.onUserBubble,
                                       fontWeight: FontWeight.w400,
                                       height: 1.45,
@@ -138,8 +140,8 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
                                   bottom: AppSpacing.x4,
                                 ),
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                  vertical: 4,
+                                  horizontal: AppSpacing.x1,
+                                  vertical: AppSpacing.x1,
                                 ),
                                 constraints: BoxConstraints(
                                   maxWidth:

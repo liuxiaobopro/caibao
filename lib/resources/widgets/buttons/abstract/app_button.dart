@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:caibao/resources/themes/tokens/app_radius.dart';
 
 class _SubmitFormHolder {
   (dynamic, Function(dynamic data))? submitForm;
@@ -72,7 +73,7 @@ abstract class StatefulAppButton extends StatelessWidget with FormSubmittable {
               child: InkWell(
                 // Only add tap handler if no animation (animation wrapper handles tap otherwise)
                 onTap: hasAnimation ? null : pressed,
-                borderRadius: splashStyle?.borderRadius ?? BorderRadius.circular(14),
+                borderRadius: splashStyle?.borderRadius ?? AppRadius.xlAll,
                 splashColor: splashStyle?.getSplashColor(
                     context, Theme.of(context).colorScheme.onSurface),
                 highlightColor: splashStyle?.getHighlightColor(
