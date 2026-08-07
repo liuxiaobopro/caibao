@@ -4,6 +4,23 @@ import 'package:caibao_hello_app/caibao_hello_app.dart';
 import 'package:caibao_todo_app/caibao_todo_app.dart';
 import 'package:flutter/widgets.dart';
 
+enum AppSlug {
+  hello('hello'),
+  todos('todos');
+
+  const AppSlug(this.value);
+
+  final String value;
+
+  static AppSlug? tryParse(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    for (final item in AppSlug.values) {
+      if (item.value == raw) return item;
+    }
+    return null;
+  }
+}
+
 class AppMeta {
   const AppMeta({
     required this.slug,
@@ -11,34 +28,34 @@ class AppMeta {
     required this.description,
   });
 
-  final String slug;
+  final AppSlug slug;
   final String name;
   final String description;
 }
 
 const List<AppMeta> appList = [
   AppMeta(
-    slug: 'hello',
+    slug: AppSlug.hello,
     name: '示例应用',
     description: '用于联调的示例应用',
   ),
   AppMeta(
-    slug: 'todos',
+    slug: AppSlug.todos,
     name: '待办清单',
     description: '管理你的个人待办事项',
   ),
 ];
 
-final Map<String, WidgetBuilder> appComponents = {
-  'hello': (_) => HelloApp(api: HelloApiAdapter()),
-  'todos': (_) => TodoApp(api: TodoApiAdapter()),
+final Map<AppSlug, WidgetBuilder> appComponents = {
+  AppSlug.hello: (_) => HelloApp(api: HelloApiAdapter()),
+  AppSlug.todos: (_) => TodoApp(api: TodoApiAdapter()),
 };
 
-AppMeta? getAppMeta(String slug) {
+AppMeta? getAppMeta(AppSlug slug) {
   for (final app in appList) {
     if (app.slug == slug) return app;
   }
   return null;
 }
 
-WidgetBuilder? getAppComponent(String slug) => appComponents[slug];
+WidgetBuilder? getAppComponent(AppSlug slug) => appComponents[slug];

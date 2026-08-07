@@ -10,7 +10,7 @@ class AppsController extends Controller {
     routeTo(
       AppDetailPage.path,
       data: {
-        'slug': app.slug,
+        'slug': app.slug.value,
         'name': app.name,
         'description': app.description,
       },

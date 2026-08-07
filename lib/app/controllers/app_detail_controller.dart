@@ -3,22 +3,24 @@ import 'package:caibao/app/controllers/controller.dart';
 import 'package:flutter/widgets.dart';
 
 class AppDetailController extends Controller {
-  String slug = '';
+  AppSlug? slug;
   String name = '';
   String description = '';
 
   void bootstrap(dynamic arg) {
     if (arg is Map) {
-      slug = arg['slug']?.toString() ?? '';
+      final raw = arg['slug'];
+      slug = raw is AppSlug ? raw : AppSlug.tryParse(raw?.toString());
       name = arg['name']?.toString() ?? '';
       description = arg['description']?.toString() ?? '';
     }
-    final meta = getAppMeta(slug);
+    final meta = slug == null ? null : getAppMeta(slug!);
     if (meta != null) {
       name = meta.name;
       description = meta.description;
     }
   }
 
-  WidgetBuilder? get componentBuilder => getAppComponent(slug);
+  WidgetBuilder? get componentBuilder =>
+      slug == null ? null : getAppComponent(slug!);
 }

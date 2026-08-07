@@ -1,3 +1,4 @@
+import 'package:caibao/app/apps/registry.dart';
 import 'package:caibao/app/controllers/app_detail_controller.dart';
 import 'package:caibao/bootstrap/extensions.dart';
 import 'package:caibao/resources/themes/tokens/app_radius.dart';
@@ -37,7 +38,7 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
         backgroundColor: palette.background,
         surfaceTintColor: Colors.transparent,
         actions: [
-          if (controller.slug == 'todos')
+          if (controller.slug == AppSlug.todos)
             IconButton(
               tooltip: '新建分组',
               onPressed: () => TodoAppBarActions.createGroup?.call(),
