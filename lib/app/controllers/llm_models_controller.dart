@@ -5,21 +5,7 @@ import 'package:caibao/app/networking/api_service.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class LlmModelsController extends Controller {
-  static const List<String> categories = [
-    'text',
-    'vision',
-    'multimodal',
-    'embedding',
-    'rerank',
-    'image',
-    'asr',
-    'tts',
-    'audio',
-    'video',
-    'code',
-    'moderation',
-    'reasoning',
-  ];
+  static const List<LlmModelCategory> categories = LlmModelCategory.values;
 
   List<LlmModel> items = [];
   bool loading = true;

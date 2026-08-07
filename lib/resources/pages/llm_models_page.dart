@@ -29,10 +29,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
     final model = TextEditingController(text: editing?.model ?? '');
     final baseUrl = TextEditingController(text: editing?.baseUrl ?? '');
     final apiKey = TextEditingController();
-    var category = editing?.category ?? 'multimodal';
-    if (!LlmModelsController.categories.contains(category)) {
-      category = 'multimodal';
-    }
+    var category = editing?.category ?? LlmModelCategory.multimodal;
     var submitting = false;
     final palette = context.palette;
 
@@ -81,12 +78,15 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                       ),
                       obscureText: true,
                     ),
-                    DropdownButtonFormField<String>(
+                    DropdownButtonFormField<LlmModelCategory>(
                       initialValue: category,
                       decoration: const InputDecoration(labelText: '分类'),
                       items: LlmModelsController.categories
                           .map(
-                            (c) => DropdownMenuItem(value: c, child: Text(c)),
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(c.label),
+                            ),
                           )
                           .toList(),
                       onChanged: (v) {
@@ -110,7 +110,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                                 'name': name.text.trim(),
                                 'model': model.text.trim(),
                                 'base_url': baseUrl.text.trim(),
-                                'category': category,
+                                'category': category.value,
                               };
                               if (apiKey.text.trim().isNotEmpty) {
                                 body['api_key'] = apiKey.text.trim();
@@ -228,7 +228,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                '${item.model ?? ''} · ${item.category ?? ''}',
+                                '${item.model ?? ''} · ${item.category?.label ?? ''}',
                                 style: TextStyle(
                                   fontSize: AppTypography.sm,
                                   color: palette.mutedForeground,

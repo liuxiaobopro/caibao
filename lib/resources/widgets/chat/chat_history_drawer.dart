@@ -11,6 +11,7 @@ import 'package:caibao/resources/themes/tokens/app_shadows.dart';
 import 'package:caibao/resources/themes/tokens/app_sizes.dart';
 import 'package:caibao/resources/themes/tokens/app_spacing.dart';
 import 'package:caibao/resources/themes/tokens/app_typography.dart';
+import 'package:caibao/resources/widgets/notifications/notification_bell.dart';
 import 'package:flutter/material.dart';
 
 class ChatHistoryDrawer extends StatelessWidget {
@@ -74,13 +75,8 @@ class ChatHistoryDrawer extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.notifications_none_rounded,
-                          color: palette.foreground,
-                          size: 24,
-                        ),
+                      NotificationBell(
+                        onNavigate: (route) async => _go(context, route),
                       ),
                       IconButton(
                         onPressed: () {},

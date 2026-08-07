@@ -3,6 +3,7 @@ import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/llm_model.dart';
+import 'package:caibao/app/models/notification_item.dart';
 import 'package:caibao/app/models/storage_config.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
@@ -347,6 +348,52 @@ class ApiService extends NyApiService {
 
   Future<void> enableLlmModel(String id) async {
     await _data((dio) => dio.post('/llm-models/$id/enable'));
+  }
+
+  Future<({List<NotificationItem> items, int total})> listNotifications({
+    int pageNum = 1,
+    int pageSize = 20,
+    bool unreadOnly = false,
+  }) async {
+    final query = <String, dynamic>{
+      'page_num': pageNum,
+      'page_size': pageSize,
+    };
+    if (unreadOnly) {
+      query['unread_only'] = 'true';
+    }
+
+    final data = await _data(
+      (dio) => dio.get('/notifications', queryParameters: query),
+    );
+    final map = Map<String, dynamic>.from(data as Map? ?? {});
+    final items = (map['items'] as List? ?? [])
+        .map((e) => NotificationItem.fromJson(e))
+        .toList();
+    final total = map['total'] is int
+        ? map['total'] as int
+        : int.tryParse('${map['total'] ?? items.length}') ?? items.length;
+    return (items: items, total: total);
+  }
+
+  Future<int> getUnreadNotificationCount() async {
+    final data = await _data((dio) => dio.get('/notifications/unread-count'));
+    final map = Map<String, dynamic>.from(data as Map? ?? {});
+    final count = map['count'];
+    if (count is int) return count;
+    return int.tryParse('${count ?? 0}') ?? 0;
+  }
+
+  Future<void> markNotificationRead(String id) async {
+    await _data((dio) => dio.post('/notifications/$id/read'));
+  }
+
+  Future<int> markAllNotificationsRead() async {
+    final data = await _data((dio) => dio.post('/notifications/read-all'));
+    final map = Map<String, dynamic>.from(data as Map? ?? {});
+    final count = map['count'];
+    if (count is int) return count;
+    return int.tryParse('${count ?? 0}') ?? 0;
   }
 
   Future<int> trackEvents(List<Map<String, dynamic>> events) async {

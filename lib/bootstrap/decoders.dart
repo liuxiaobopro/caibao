@@ -15,6 +15,7 @@ import 'package:caibao/app/models/chat_message.dart';
 import 'package:caibao/app/models/drive_file.dart';
 import 'package:caibao/app/models/llm_model.dart';
 import 'package:caibao/app/models/mini_app.dart';
+import 'package:caibao/app/models/notification_item.dart';
 import 'package:caibao/app/models/storage_config.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_service.dart';
@@ -62,6 +63,10 @@ final Map<Type, dynamic> modelDecoders = {
   List<LlmModel>: (data) =>
       List.from(data).map((json) => LlmModel.fromJson(json)).toList(),
   LlmModel: (data) => LlmModel.fromJson(data),
+
+  List<NotificationItem>: (data) =>
+      List.from(data).map((json) => NotificationItem.fromJson(json)).toList(),
+  NotificationItem: (data) => NotificationItem.fromJson(data),
 };
 
 final Map<Type, dynamic> apiDecoders = {
