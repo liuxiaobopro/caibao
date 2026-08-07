@@ -16,7 +16,7 @@ class _AppsPageState extends NyPage<AppsPage> {
   AppsController get controller => widget.controller;
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   @override
   Widget view(BuildContext context) {

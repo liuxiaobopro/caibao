@@ -24,7 +24,7 @@ class _DrivePageState extends NyPage<DrivePage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   Future<void> _openFile(DriveFile file) async {
     if (file.id == null) return;

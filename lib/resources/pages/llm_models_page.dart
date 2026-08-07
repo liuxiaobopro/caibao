@@ -22,7 +22,7 @@ class _LlmModelsPageState extends NyPage<LlmModelsPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   Future<void> _openForm({LlmModel? editing}) async {
     final name = TextEditingController(text: editing?.name ?? '');

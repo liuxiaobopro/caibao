@@ -29,7 +29,7 @@ class _AgentChatPageState extends NyPage<AgentChatPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   @override
   void dispose() {

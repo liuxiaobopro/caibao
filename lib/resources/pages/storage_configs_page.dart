@@ -23,7 +23,7 @@ class _StorageConfigsPageState extends NyPage<StorageConfigsPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   Future<void> _openForm({S3StorageConfig? editing}) async {
     final name = TextEditingController(text: editing?.name ?? '');

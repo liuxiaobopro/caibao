@@ -24,7 +24,7 @@ class _AppDetailPageState extends NyPage<AppDetailPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   @override
   Widget view(BuildContext context) {

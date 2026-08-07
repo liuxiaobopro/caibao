@@ -26,7 +26,7 @@ class _LoginPageState extends NyPage<LoginPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   @override
   void dispose() {

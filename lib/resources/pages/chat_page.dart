@@ -31,6 +31,7 @@ class _ChatPageState extends NyPage<ChatPage> {
   final TextEditingController _composerController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _showScrollToBottom = false;
+  DateTime? _lastBackAt;
 
   @override
   get init => () async {
@@ -45,7 +46,7 @@ class _ChatPageState extends NyPage<ChatPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   @override
   void dispose() {
@@ -93,29 +94,14 @@ class _ChatPageState extends NyPage<ChatPage> {
       Navigator.of(context).pop();
       return;
     }
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('退出应用'),
-        content: const Text('确定要退出菜包吗？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              '退出',
-              style: TextStyle(color: context.palette.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (ok == true && mounted) {
+    final now = DateTime.now();
+    final last = _lastBackAt;
+    if (last != null && now.difference(last) < const Duration(seconds: 2)) {
       await SystemNavigator.pop();
+      return;
     }
+    _lastBackAt = now;
+    showToastInfo(description: '再按一次退出应用');
   }
 
   @override

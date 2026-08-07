@@ -23,7 +23,7 @@ class _AgentsPageState extends NyPage<AgentsPage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   Future<void> _openForm({Agent? editing}) async {
     final nameCtrl = TextEditingController(text: editing?.name ?? '');

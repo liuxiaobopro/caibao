@@ -25,7 +25,7 @@ class _ProfilePageState extends NyPage<ProfilePage> {
       };
 
   @override
-  bool get stateManaged => false;
+  bool get stateManaged => true;
 
   Future<void> _openThemeSheet() async {
     final current = await ThemePreference.read();
