@@ -254,17 +254,13 @@ class _ChatPageState extends NyPage<ChatPage> {
                                       bottom: AppSpacing.x4,
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
+                                      horizontal: 4,
+                                      vertical: 4,
                                     ),
                                     constraints: BoxConstraints(
                                       maxWidth:
                                           MediaQuery.sizeOf(context).width *
                                               0.88,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: palette.assistantBubble,
-                                      borderRadius: BorderRadius.circular(18),
                                     ),
                                     child: Column(
                                       crossAxisAlignment:

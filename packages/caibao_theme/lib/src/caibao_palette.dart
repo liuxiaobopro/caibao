@@ -79,7 +79,7 @@ class CaibaoPalette {
   static const Color infoHex = Color(0xFF3B82F6);
   static const Color violetHex = Color(0xFF8B5CF6);
   static const Color successHex = Color(0xFF10B981);
-  static const Color userBubbleHex = Color(0xFF006BFF);
+  static const Color userBubbleHex = Color(0xFF1A9B7A);
 
   static const CaibaoPalette light = CaibaoPalette(
     brand: brandHex,
