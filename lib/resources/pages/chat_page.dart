@@ -132,10 +132,12 @@ class _ChatPageState extends NyPage<ChatPage> {
         conversations: c.conversations,
         activeConversationId: c.activeConversationId,
         loading: c.loadingConversations,
+        keyword: c.conversationKeyword,
         onNewChat: c.newChat,
         onSelectConversation: c.selectConversation,
         onDeleteConversation: c.deleteConversation,
         onRefresh: c.loadConversations,
+        onSearch: (keyword) => c.loadConversations(keyword: keyword),
         onNavigate: _navigateFromDrawer,
       ),
       appBar: ChatAppBar(

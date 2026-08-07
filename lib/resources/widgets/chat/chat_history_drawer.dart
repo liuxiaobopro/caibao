@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:caibao/app/models/chat_conversation.dart';
 import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/utils/conversation_groups.dart';
@@ -14,7 +16,7 @@ import 'package:caibao/resources/themes/tokens/app_typography.dart';
 import 'package:caibao/resources/widgets/notifications/notification_bell.dart';
 import 'package:flutter/material.dart';
 
-class ChatHistoryDrawer extends StatelessWidget {
+class ChatHistoryDrawer extends StatefulWidget {
   const ChatHistoryDrawer({
     super.key,
     required this.onNewChat,
@@ -22,10 +24,12 @@ class ChatHistoryDrawer extends StatelessWidget {
     required this.onDeleteConversation,
     required this.onRefresh,
     required this.onNavigate,
+    required this.onSearch,
     required this.conversations,
     this.activeConversationId,
     this.user,
     this.loading = false,
+    this.keyword = '',
   });
 
   final VoidCallback onNewChat;
@@ -33,24 +37,57 @@ class ChatHistoryDrawer extends StatelessWidget {
   final ValueChanged<ChatConversation> onDeleteConversation;
   final Future<void> Function() onRefresh;
   final Future<void> Function(dynamic route) onNavigate;
+  final ValueChanged<String> onSearch;
   final List<ChatConversation> conversations;
   final String? activeConversationId;
   final User? user;
   final bool loading;
+  final String keyword;
+
+  @override
+  State<ChatHistoryDrawer> createState() => _ChatHistoryDrawerState();
+}
+
+class _ChatHistoryDrawerState extends State<ChatHistoryDrawer> {
+  static const _searchDebounce = Duration(milliseconds: 300);
+
+  late final TextEditingController _searchController;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController(text: widget.keyword);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {});
+    _debounce?.cancel();
+    final delay = value.trim().isEmpty ? Duration.zero : _searchDebounce;
+    _debounce = Timer(delay, () => widget.onSearch(value));
+  }
 
   void _go(BuildContext context, dynamic route) {
     Navigator.of(context).pop();
-    onNavigate(route);
+    widget.onNavigate(route);
   }
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final width = MediaQuery.sizeOf(context).width * 0.88;
-    final groups = groupConversations(conversations);
-    final nickname = user?.displayName ?? '用户';
+    final groups = groupConversations(widget.conversations);
+    final nickname = widget.user?.displayName ?? '用户';
     final initial =
         nickname.isNotEmpty ? nickname.characters.first : '用';
+    final hasKeyword = _searchController.text.trim().isNotEmpty;
 
     return Drawer(
       width: width,
@@ -78,15 +115,42 @@ class ChatHistoryDrawer extends StatelessWidget {
                       NotificationBell(
                         onNavigate: (route) async => _go(context, route),
                       ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.search_rounded,
-                          color: palette.foreground,
-                          size: 24,
-                        ),
-                      ),
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: _onSearchChanged,
+                    textInputAction: TextInputAction.search,
+                    decoration: InputDecoration(
+                      hintText: '搜索...',
+                      isDense: true,
+                      filled: true,
+                      fillColor: palette.secondary.withValues(alpha: 0.7),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        color: palette.mutedForeground,
+                        size: 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.fullAll,
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.fullAll,
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.fullAll,
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                    ),
                   ),
                 ),
                 Padding(
@@ -108,12 +172,13 @@ class ChatHistoryDrawer extends StatelessWidget {
                               CircleAvatar(
                                 radius: 22,
                                 backgroundColor: palette.brandContainer,
-                                backgroundImage: user?.avatarUrl != null &&
-                                        user!.avatarUrl!.isNotEmpty
-                                    ? NetworkImage(user!.avatarUrl!)
+                                backgroundImage: widget.user?.avatarUrl !=
+                                            null &&
+                                        widget.user!.avatarUrl!.isNotEmpty
+                                    ? NetworkImage(widget.user!.avatarUrl!)
                                     : null,
-                                child: user?.avatarUrl != null &&
-                                        user!.avatarUrl!.isNotEmpty
+                                child: widget.user?.avatarUrl != null &&
+                                        widget.user!.avatarUrl!.isNotEmpty
                                     ? null
                                     : Text(
                                         initial,
@@ -186,8 +251,8 @@ class ChatHistoryDrawer extends StatelessWidget {
                 const SizedBox(height: 8),
                 Expanded(
                   child: RefreshIndicator(
-                    onRefresh: onRefresh,
-                    child: loading && conversations.isEmpty
+                    onRefresh: widget.onRefresh,
+                    child: widget.loading && widget.conversations.isEmpty
                         ? ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: const [
@@ -206,7 +271,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                                 ),
                                 children: [
                                   Text(
-                                    '暂无对话',
+                                    hasKeyword ? '无匹配会话' : '暂无会话',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: AppTypography.base,
@@ -249,14 +314,14 @@ class ChatHistoryDrawer extends StatelessWidget {
                                       ...group.items.map(
                                         (item) => _ConversationTile(
                                           conversation: item,
-                                          selected:
-                                              item.id == activeConversationId,
+                                          selected: item.id ==
+                                              widget.activeConversationId,
                                           onTap: () {
                                             Navigator.of(context).pop();
-                                            onSelectConversation(item);
+                                            widget.onSelectConversation(item);
                                           },
-                                          onLongPress: () =>
-                                              onDeleteConversation(item),
+                                          onLongPress: () => widget
+                                              .onDeleteConversation(item),
                                         ),
                                       ),
                                     ],
@@ -279,7 +344,7 @@ class ChatHistoryDrawer extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       Navigator.of(context).pop();
-                      onNewChat();
+                      widget.onNewChat();
                     },
                     borderRadius: AppRadius.fullAll,
                     child: Container(

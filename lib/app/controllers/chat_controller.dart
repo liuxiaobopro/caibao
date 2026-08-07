@@ -14,6 +14,7 @@ class ChatController extends Controller {
 
   String title = '菜包';
   String? activeConversationId;
+  String conversationKeyword = '';
   List<ChatConversation> conversations = [];
   List<ChatMessage> messages = [];
   User? user;
@@ -36,11 +37,17 @@ class ChatController extends Controller {
     }
   }
 
-  Future<void> loadConversations() async {
+  Future<void> loadConversations({String? keyword}) async {
+    if (keyword != null) {
+      conversationKeyword = keyword;
+    }
+    final kw = conversationKeyword.trim();
     setState(setState: () => loadingConversations = true);
     try {
       final result = await api<ApiService>(
-        (request) => request.listConversations(),
+        (request) => request.listConversations(
+          keyword: kw.isEmpty ? null : kw,
+        ),
       );
       setState(setState: () {
         conversations = result?.items ?? [];
