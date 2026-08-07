@@ -12,6 +12,7 @@ import 'package:caibao/app/models/user.dart';
 import 'package:caibao/app/networking/api_exception.dart';
 import 'package:caibao/app/networking/dio/interceptors/bearer_auth_interceptor.dart';
 import 'package:caibao/bootstrap/decoders.dart';
+import 'package:caibao_crontab_app/caibao_crontab_app.dart';
 import 'package:caibao_todo_app/caibao_todo_app.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -384,6 +385,46 @@ class ApiService extends NyApiService {
 
   Future<void> deleteTodo(String id) async {
     await _data((dio) => dio.delete('/todos/$id'));
+  }
+
+  Future<List<CronJob>> listCronJobs() async {
+    final data = await _data((dio) => dio.get('/cron-jobs'));
+    final map = Map<String, dynamic>.from(data as Map);
+    return (map['items'] as List? ?? [])
+        .map((e) => CronJob.fromJson(e))
+        .toList();
+  }
+
+  Future<CronJob> createCronJob(CronJob draft) async {
+    final data = await _data(
+      (dio) => dio.post('/cron-jobs', data: draft.toCreateBody()),
+    );
+    return CronJob.fromJson(data);
+  }
+
+  Future<CronJob> updateCronJob(String id, CronJob draft) async {
+    final data = await _data(
+      (dio) => dio.patch('/cron-jobs/$id', data: draft.toCreateBody()),
+    );
+    return CronJob.fromJson(data);
+  }
+
+  Future<void> deleteCronJob(String id) async {
+    await _data((dio) => dio.delete('/cron-jobs/$id'));
+  }
+
+  Future<CronRunStatus> runCronJob(String id) async {
+    final data = await _data((dio) => dio.post('/cron-jobs/$id/run'));
+    final map = Map<String, dynamic>.from(data as Map);
+    return CronRunStatus.parse(map['status']?.toString());
+  }
+
+  Future<List<CronJobRun>> listCronJobRuns(String id) async {
+    final data = await _data((dio) => dio.get('/cron-jobs/$id/runs'));
+    final map = Map<String, dynamic>.from(data as Map);
+    return (map['items'] as List? ?? [])
+        .map((e) => CronJobRun.fromJson(e))
+        .toList();
   }
 
   Future<List<S3StorageConfig>> listStorageConfigs() async {

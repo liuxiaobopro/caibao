@@ -1,12 +1,15 @@
+import 'package:caibao/app/apps/adapters/crontab_api_adapter.dart';
 import 'package:caibao/app/apps/adapters/hello_api_adapter.dart';
 import 'package:caibao/app/apps/adapters/todo_api_adapter.dart';
+import 'package:caibao_crontab_app/caibao_crontab_app.dart';
 import 'package:caibao_hello_app/caibao_hello_app.dart';
 import 'package:caibao_todo_app/caibao_todo_app.dart';
 import 'package:flutter/widgets.dart';
 
 enum AppSlug {
   hello('hello'),
-  todos('todos');
+  todos('todos'),
+  crontab('crontab');
 
   const AppSlug(this.value);
 
@@ -44,11 +47,17 @@ const List<AppMeta> appList = [
     name: '待办清单',
     description: '管理你的个人待办事项',
   ),
+  AppMeta(
+    slug: AppSlug.crontab,
+    name: '计划任务',
+    description: '定时站内通知或邮件提醒',
+  ),
 ];
 
 final Map<AppSlug, WidgetBuilder> appComponents = {
   AppSlug.hello: (_) => HelloApp(api: HelloApiAdapter()),
   AppSlug.todos: (_) => TodoApp(api: TodoApiAdapter()),
+  AppSlug.crontab: (_) => CrontabApp(api: CrontabApiAdapter()),
 };
 
 AppMeta? getAppMeta(AppSlug slug) {

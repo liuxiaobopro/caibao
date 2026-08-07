@@ -21,11 +21,13 @@ enum AppSlug { hello('hello'), todos('todos'); /* … */ }
 const List<AppMeta> appList = [
   AppMeta(slug: AppSlug.hello, name: '示例应用', description: '...'),
   AppMeta(slug: AppSlug.todos, name: '待办清单', description: '...'),
+  AppMeta(slug: AppSlug.crontab, name: '计划任务', description: '...'),
 ];
 
 final Map<AppSlug, WidgetBuilder> appComponents = {
   AppSlug.hello: (_) => HelloApp(api: HelloApiAdapter()),
   AppSlug.todos: (_) => TodoApp(api: TodoApiAdapter()),
+  AppSlug.crontab: (_) => CrontabApp(api: CrontabApiAdapter()),
 };
 ```
 
@@ -39,6 +41,7 @@ final Map<AppSlug, WidgetBuilder> appComponents = {
 4. 更新 `registry.dart`：`AppSlug` + `appList` / `appComponents`
 5. 需要的 model 解码器写入 `bootstrap/decoders.dart`
 6. **主题强制** `package:caibao_theme/caibao_theme.dart`：`context.palette` / `AppSpacing` / `AppRadius` / `AppTypography` / `AppSizes` / `AppShadows`；禁止边距/圆角/字号/颜色魔法数字（见 caibao-overview「主题」）
+7. **可枚举字段用枚举**：如 `AppSlug`、`CronScheduleType` / `CronActionType`（Go `model` string enum + Flutter / TS 常量枚举），禁止散落魔法字符串
 
 ## 注意
 

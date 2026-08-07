@@ -18,6 +18,7 @@ workspace:
   - packages/caibao_theme
   - packages/hello_app
   - packages/todo_app
+  - packages/crontab_app
 
 dependencies:
   google_fonts: ^8.2.1
@@ -37,6 +38,7 @@ dependencies:
   caibao_theme: any
   caibao_hello_app: any
   caibao_todo_app: any
+  caibao_crontab_app: any
   image_picker: ^1.2.3
 
 dev_dependencies:
