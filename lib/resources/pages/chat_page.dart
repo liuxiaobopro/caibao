@@ -11,6 +11,7 @@ import 'package:caibao/resources/widgets/chat/chat_history_drawer.dart';
 import 'package:caibao/resources/widgets/chat/chat_quick_actions.dart';
 import 'package:caibao/resources/widgets/chat/message_attachments.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 class ChatPage extends NyStatefulWidget<ChatController> {
@@ -84,12 +85,46 @@ class _ChatPageState extends NyPage<ChatPage> {
     });
   }
 
+  Future<void> _onPopInvoked(bool didPop) async {
+    if (didPop) return;
+    if (_scaffoldKey.currentState?.isDrawerOpen == true) {
+      Navigator.of(context).pop();
+      return;
+    }
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('退出应用'),
+        content: const Text('确定要退出菜包吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              '退出',
+              style: TextStyle(color: context.palette.danger),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && mounted) {
+      await SystemNavigator.pop();
+    }
+  }
+
   @override
   Widget view(BuildContext context) {
     final palette = context.palette;
     final c = controller;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) => _onPopInvoked(didPop),
+      child: Scaffold(
       key: _scaffoldKey,
       backgroundColor: palette.background,
       drawer: ChatHistoryDrawer(
@@ -307,6 +342,7 @@ class _ChatPageState extends NyPage<ChatPage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
